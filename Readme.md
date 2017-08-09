@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Орест Бац](https://up.htmlacademy.ru/javascript/10/user/366801).
-* Наставник: `Неизвестно`.
+* Наставник: [Денис Золкин](https://htmlacademy.ru/profile/id31853).
 
 ---
 
