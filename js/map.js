@@ -111,7 +111,7 @@
           checkout: getRandomCheckInOut(),
           features: getRandomArrayLength(randomFeatures),
           description: '',
-          photos: ''
+          photos: []
         },
         location: location
       });
@@ -196,12 +196,11 @@
 
   function renderDialogElement(params) {
     var offerDialog = document.querySelector('#offer-dialog');
-    var child = offerDialog.querySelector('.dialog__panel');
+    var dialogPanel = offerDialog.querySelector('.dialog__panel');
 
     offerDialog.querySelector('.dialog__title > img').src = params.author.avatar;
-    offerDialog.removeChild(child);
 
-    offerDialog.appendChild(getDialogElement(params));
+    offerDialog.replaceChild(getDialogElement(params), dialogPanel);
   }
 
   var offers = getOffers(8);
