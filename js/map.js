@@ -25,6 +25,12 @@
     ]
   };
 
+  var RUSSIAN_HOUSING_TYPES = {
+    flat: 'Квартира',
+    house: 'Дом',
+    bungalo: 'Бунгало'
+  };
+
   var lodgeTemplate = document
       .querySelector('#lodge-template')
       .content
@@ -58,32 +64,10 @@
     return array.slice(0, randomLength);
   }
 
-  function getConvertedHousingType(types) {
-    var housingType;
-    var count = types.length;
-
-    for (var i = 0; i < count; i++) {
-      var randomIndex = Math.floor(Math.random() * count);
-      switch (types[randomIndex]) {
-        case 'house':
-          housingType = 'Дом';
-          break;
-        case 'bungalo':
-          housingType = 'Бунгало';
-          break;
-        default:
-          housingType = 'Квартира';
-          break;
-      }
-    }
-
-    return housingType;
-  }
-
   function getOffers(offerAmount) {
     var getRandomAvatar = createRandomArrayItemGetter(OFFERS_DETAILS['avatars']);
     var getRandomTitle = createRandomArrayItemGetter(OFFERS_DETAILS['titles']);
-    var randomHousingType = OFFERS_DETAILS['types'];
+    var getRandomHousingType = createRandomArrayItemGetter(OFFERS_DETAILS['types']);
     var getRandomCheckInOut = createRandomArrayItemGetter(OFFERS_DETAILS['checkInOut']);
     var randomFeatures = OFFERS_DETAILS['features'];
     var avatarPath = 'img/avatars/user0';
@@ -104,7 +88,7 @@
           title: getRandomTitle(),
           address: location.x + ', ' + location.y,
           price: getRandomNumber(1000, 1000000),
-          type: getConvertedHousingType(randomHousingType),
+          type: getRandomHousingType(),
           rooms: getRandomNumber(1, 5),
           quests: getRandomNumber(1, 10),
           checkin: getRandomCheckInOut(),
@@ -120,20 +104,20 @@
     return offers;
   }
 
-  function getPinMapElements(params) {
+  function getPinMapElement(pinParams) {
     var pinMapElement = document.createElement('div');
     var pinMapImage = document.createElement('img');
 
     var pinMapImageCoordinates = {
-      x: params.location.x + (56 * 0.5) + 'px',
-      y: params.location.y + 75 + 'px'
+      x: pinParams.location.x + (56 * 0.5) + 'px',
+      y: pinParams.location.y + 75 + 'px'
     };
 
     pinMapElement.classList.add('pin');
     pinMapElement.style.left = pinMapImageCoordinates.x;
     pinMapElement.style.top = pinMapImageCoordinates.y;
 
-    pinMapImage.src = params.author.avatar;
+    pinMapImage.src = pinParams.author.avatar;
     pinMapImage.classList.add('rounded');
     pinMapImage.setAttribute('width', 40);
     pinMapImage.setAttribute('height', 40);
@@ -143,13 +127,13 @@
     return pinMapElement;
   }
 
-  function renderPinMapElements(params) {
+  function renderPinMapElements(pinElements) {
     var fragment = document.createDocumentFragment();
     var pinMapBlock = document.querySelector('.tokyo__pin-map');
-    var count = params.length;
+    var count = pinElements.length;
 
     for (var i = 0; i < count; i++) {
-      fragment.appendChild(getPinMapElements(params[i]));
+      fragment.appendChild(getPinMapElement(pinElements[i]));
     }
     pinMapBlock.appendChild(fragment);
   }
@@ -158,30 +142,23 @@
     var offerDialogTemplate = lodgeTemplate.cloneNode(true);
     var offerFeatures = element.offer.features;
 
-    offerDialogTemplate.querySelector('.lodge__title')
-        .textContent = element.offer.title;
+    var lodgeTitle = offerDialogTemplate.querySelector('.lodge__title');
+    var lodgeAddress = offerDialogTemplate.querySelector('.lodge__address');
+    var lodgePrice = offerDialogTemplate.querySelector('.lodge__price');
+    var lodgeType = offerDialogTemplate.querySelector('.lodge__type');
+    var lodgeRoomsAndGuests = offerDialogTemplate.querySelector('.lodge__rooms-and-guests');
+    var lodgeCheckinTime = offerDialogTemplate.querySelector('.lodge__checkin-time');
+    var lodgeDescription = offerDialogTemplate.querySelector('.lodge__description');
 
-    offerDialogTemplate.querySelector('.lodge__address')
-        .textContent = element.offer.address;
-
-    offerDialogTemplate.querySelector('.lodge__price')
-        .innerHTML = element.offer.price + '&#x20bd;/ночь';
-
-    offerDialogTemplate.querySelector('.lodge__type')
-        .textContent = element.offer.type;
-
-    offerDialogTemplate
-        .querySelector('.lodge__rooms-and-guests')
-        .innerHTML = 'Для ' + element.offer.quests +
-      ' гостей в ' + element.offer.rooms + ' комнатах';
-
-    offerDialogTemplate
-        .querySelector('.lodge__checkin-time')
-        .innerHTML = 'Заезд после ' + element.offer.checkin +
-      ', выезд до ' + element.offer.checkout;
-
-    offerDialogTemplate.querySelector('.lodge__description')
-        .textContent = element.offer.description;
+    lodgeTitle.textContent = element.offer.title;
+    lodgeAddress.textContent = element.offer.address;
+    lodgePrice.textContent = element.offer.price + ' \u20BD/ночь';
+    lodgeType.textContent = RUSSIAN_HOUSING_TYPES[element.offer.type];
+    lodgeRoomsAndGuests.textContent = 'Для ' + element.offer.quests +
+        ' гостей в ' + element.offer.rooms + ' комнатах';
+    lodgeCheckinTime.textContent = 'Заезд после ' + element.offer.checkin +
+        ', выезд до ' + element.offer.checkout;
+    lodgeDescription.textContent = element.offer.description;
 
     for (var i = 0; i < offerFeatures.length; i++) {
       var emptySpan = document.createElement('span');
@@ -191,16 +168,17 @@
       offerDialogTemplate.querySelector('.lodge__features')
           .appendChild(emptySpan);
     }
+
     return offerDialogTemplate;
   }
 
-  function renderDialogElement(params) {
+  function renderDialogElement(offer) {
     var offerDialog = document.querySelector('#offer-dialog');
     var dialogPanel = offerDialog.querySelector('.dialog__panel');
 
-    offerDialog.querySelector('.dialog__title > img').src = params.author.avatar;
+    offerDialog.querySelector('.dialog__title > img').src = offer.author.avatar;
 
-    offerDialog.replaceChild(getDialogElement(params), dialogPanel);
+    offerDialog.replaceChild(getDialogElement(offer), dialogPanel);
   }
 
   var offers = getOffers(8);
