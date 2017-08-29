@@ -31,10 +31,20 @@
     bungalo: 'Бунгало'
   };
 
+  var KEY_CODES = {
+    ESC: 27,
+    ENTER: 13
+  };
+
   var lodgeTemplate = document
       .querySelector('#lodge-template')
       .content
       .querySelector('.dialog__panel');
+
+  var pinMapBlock = document.querySelector('.tokyo__pin-map');
+  var offerDialog = document.querySelector('#offer-dialog');
+  var dialogClose = offerDialog.querySelector('.dialog__close');
+  var selectedPin;
 
 
   function createRandomArrayItemGetter(array) {
@@ -121,6 +131,7 @@
     pinMapImage.classList.add('rounded');
     pinMapImage.setAttribute('width', 40);
     pinMapImage.setAttribute('height', 40);
+    pinMapImage.setAttribute('tabindex', 0);
 
     pinMapElement.appendChild(pinMapImage);
 
@@ -129,12 +140,15 @@
 
   function renderPinMapElements(pinElements) {
     var fragment = document.createDocumentFragment();
-    var pinMapBlock = document.querySelector('.tokyo__pin-map');
     var count = pinElements.length;
 
     for (var i = 0; i < count; i++) {
-      fragment.appendChild(getPinMapElement(pinElements[i]));
+      var pinData = pinElements[i];
+      var pinElement = getPinMapElement(pinData);
+      pinElement.addEventListener('click', renderDialogElement.bind(null, pinData));
+      fragment.appendChild(pinElement);
     }
+
     pinMapBlock.appendChild(fragment);
   }
 
@@ -173,7 +187,6 @@
   }
 
   function renderDialogElement(offer) {
-    var offerDialog = document.querySelector('#offer-dialog');
     var dialogPanel = offerDialog.querySelector('.dialog__panel');
 
     offerDialog.querySelector('.dialog__title > img').src = offer.author.avatar;
@@ -183,5 +196,47 @@
 
   var offers = getOffers(8);
   renderPinMapElements(offers);
-  renderDialogElement(offers[0]);
+
+
+  var pinMapBlockClickHandler = function (event) {
+    if (selectedPin) {
+      selectedPin.classList.remove('pin--active');
+    }
+
+    selectedPin = event.target;
+    while (selectedPin !== pinMapBlock) {
+      if (selectedPin.tagName === 'DIV') {
+        selectedPin.classList.add('pin--active');
+        return;
+      }
+      selectedPin = selectedPin.parentNode;
+    }
+  };
+
+  var openDialog = function () {
+    offerDialog.classList.remove('hidden');
+  };
+
+  var closeDialog = function () {
+    offerDialog.classList.add('hidden');
+    selectedPin.classList.remove('pin--active');
+  };
+
+  var onDialogEscPress = function (event) {
+    if (event.keyCode === KEY_CODES.ESC) {
+      closeDialog();
+    }
+  };
+
+  var onPinEnterPress = function (event) {
+    if (event.keyCode === KEY_CODES.ENTER) {
+      openDialog();
+    }
+  };
+
+  pinMapBlock.addEventListener('click', pinMapBlockClickHandler);
+  pinMapBlock.addEventListener('click', openDialog);
+  pinMapBlock.addEventListener('keydown', onPinEnterPress);
+  dialogClose.addEventListener('click', closeDialog);
+  document.addEventListener('keydown', onDialogEscPress);
 })();
