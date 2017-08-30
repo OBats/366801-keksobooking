@@ -146,6 +146,7 @@
       var pinData = pinElements[i];
       var pinElement = getPinMapElement(pinData);
       pinElement.addEventListener('click', renderDialogElement.bind(null, pinData));
+      pinElement.addEventListener('focus', renderDialogElement.bind(null, pinData));
       fragment.appendChild(pinElement);
     }
 
@@ -234,8 +235,12 @@
     }
   };
 
-  pinMapBlock.addEventListener('click', pinMapBlockClickHandler);
-  pinMapBlock.addEventListener('click', openDialog);
+  pinMapBlock.addEventListener('click', function (event) {
+    pinMapBlockClickHandler(event);
+    openDialog();
+  });
+  pinMapBlock.addEventListener('focus', pinMapBlockClickHandler, true);
+  pinMapBlock.addEventListener('blur', closeDialog, true);
   pinMapBlock.addEventListener('keydown', onPinEnterPress);
   dialogClose.addEventListener('click', closeDialog);
   document.addEventListener('keydown', onDialogEscPress);
