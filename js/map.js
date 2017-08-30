@@ -44,6 +44,10 @@
   var pinMapBlock = document.querySelector('.tokyo__pin-map');
   var offerDialog = document.querySelector('#offer-dialog');
   var dialogClose = offerDialog.querySelector('.dialog__close');
+  var timeInValue = document.querySelector('#timein');
+  var timeOutValue = document.querySelector('#timeout');
+  var housingType = document.querySelector('#type');
+  var roomNumber = document.querySelector('#room_number');
   var selectedPin;
 
 
@@ -235,20 +239,6 @@
     }
   };
 
-  pinMapBlock.addEventListener('click', function (event) {
-    openDialog();
-    pinMapBlockClickHandler(event);
-  });
-  pinMapBlock.addEventListener('focus', pinMapBlockClickHandler, true);
-  // pinMapBlock.addEventListener('blur', closeDialog, true);
-  pinMapBlock.addEventListener('keydown', onPinEnterPress);
-  dialogClose.addEventListener('click', closeDialog);
-  document.addEventListener('keydown', onDialogEscPress);
-
-
-  var timeInValue = document.querySelector('#timein');
-  var timeOutValue = document.querySelector('#timeout');
-
   function syncTimeIn() {
     var checkInOutTime = OFFERS_DETAILS.checkInOut;
 
@@ -269,43 +259,62 @@
     }
   }
 
-  timeInValue.addEventListener('change', syncTimeIn);
-  timeOutValue.addEventListener('change', syncTimeOut);
+  function syncTypeWithPrice() {
+    var nightPrice = document.querySelector('#price');
 
-  var housingType = document.querySelector('#type');
-  var nightPrice = document.querySelector('#price');
-
-  function syncTypePrice() {
-    var types = OFFERS_DETAILS.types;
-    var rusHousingTypes = RUSSIAN_HOUSING_TYPES;
-
-    types.push('palace');
-    rusHousingTypes.palace = 'Дворец';
-
-    // for (var i = 0; i < types.length; i++) {
     switch (housingType.value) {
-      case types[0]:
+      case 'flat':
         nightPrice.value = '1000';
         nightPrice.min = nightPrice.value;
         break;
-      case types[1]:
+      case 'house':
         nightPrice.value = '5000';
         nightPrice.min = nightPrice.value;
         break;
-      case types[2]:
-        nightPrice.value = '0';
-        nightPrice.min = nightPrice.value;
-        break;
-      case types[3]:
+      case 'palace':
         nightPrice.value = '10000';
         nightPrice.min = nightPrice.value;
         break;
       default:
-        nightPrice.value = '1000';
+        nightPrice.value = '0';
         nightPrice.min = nightPrice.value;
         break;
     }
-    // };
   }
-  housingType.addEventListener('change', syncTypePrice);
+
+  function syncRoomsWithCapacity() {
+    var capacity = document.querySelector('#capacity');
+
+    switch (roomNumber.value) {
+      case '1':
+        capacity.value = '1';
+        break;
+      case '2':
+        capacity.value = '2';
+        break;
+      case '3':
+        capacity.value = '3';
+        break;
+      default:
+        capacity.value = '0';
+        break;
+    }
+  }
+
+  pinMapBlock.addEventListener('click', function (event) {
+    openDialog();
+    pinMapBlockClickHandler(event);
+  });
+  pinMapBlock.addEventListener('focus', pinMapBlockClickHandler, true);
+  pinMapBlock.addEventListener('blur', closeDialog, true);
+  pinMapBlock.addEventListener('keydown', onPinEnterPress);
+  dialogClose.addEventListener('click', closeDialog);
+  document.addEventListener('keydown', onDialogEscPress);
+
+  timeInValue.addEventListener('change', syncTimeIn);
+  timeOutValue.addEventListener('change', syncTimeOut);
+
+  housingType.addEventListener('change', syncTypeWithPrice);
+
+  roomNumber.addEventListener('change', syncRoomsWithCapacity);
 })();
