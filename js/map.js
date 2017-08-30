@@ -15,6 +15,8 @@
     ],
     types: ['flat', 'house', 'bungalo'],
     checkInOut: ['12:00', '13:00', '14:00'],
+    checkInLiteral: ['После 12', 'После 13', 'После 14'],
+    checkOutLiteral: ['Выезд до 12', 'Выезд до 13', 'Выезд до 14'],
     features: [
       'wifi',
       'dishwasher',
@@ -126,12 +128,12 @@
     pinMapElement.classList.add('pin');
     pinMapElement.style.left = pinMapImageCoordinates.x;
     pinMapElement.style.top = pinMapImageCoordinates.y;
+    pinMapElement.setAttribute('tabindex', 0);
 
     pinMapImage.src = pinParams.author.avatar;
     pinMapImage.classList.add('rounded');
     pinMapImage.setAttribute('width', 40);
     pinMapImage.setAttribute('height', 40);
-    pinMapImage.setAttribute('tabindex', 0);
 
     pinMapElement.appendChild(pinMapImage);
 
@@ -146,6 +148,7 @@
       var pinData = pinElements[i];
       var pinElement = getPinMapElement(pinData);
       pinElement.addEventListener('click', renderDialogElement.bind(null, pinData));
+      pinElement.addEventListener('focus', renderDialogElement.bind(null, pinData));
       fragment.appendChild(pinElement);
     }
 
@@ -234,8 +237,12 @@
     }
   };
 
-  pinMapBlock.addEventListener('click', pinMapBlockClickHandler);
-  pinMapBlock.addEventListener('click', openDialog);
+  pinMapBlock.addEventListener('click', function (event) {
+    openDialog();
+    pinMapBlockClickHandler(event);
+  });
+  pinMapBlock.addEventListener('focus', pinMapBlockClickHandler, true);
+  pinMapBlock.addEventListener('blur', closeDialog, true);
   pinMapBlock.addEventListener('keydown', onPinEnterPress);
   dialogClose.addEventListener('click', closeDialog);
   document.addEventListener('keydown', onDialogEscPress);
