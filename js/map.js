@@ -126,14 +126,17 @@
     pinMapElement.classList.add('pin');
     pinMapElement.style.left = pinMapImageCoordinates.x;
     pinMapElement.style.top = pinMapImageCoordinates.y;
+    pinMapElement.setAttribute('tabindex', 0);
 
     pinMapImage.src = pinParams.author.avatar;
     pinMapImage.classList.add('rounded');
     pinMapImage.setAttribute('width', 40);
     pinMapImage.setAttribute('height', 40);
-    pinMapImage.setAttribute('tabindex', 0);
 
     pinMapElement.appendChild(pinMapImage);
+
+    pinMapElement.addEventListener('click', renderDialogElement.bind(null, pinParams));
+    pinMapElement.addEventListener('focus', renderDialogElement.bind(null, pinParams));
 
     return pinMapElement;
   }
@@ -143,11 +146,7 @@
     var count = pinElements.length;
 
     for (var i = 0; i < count; i++) {
-      var pinData = pinElements[i];
-      var pinElement = getPinMapElement(pinData);
-      pinElement.addEventListener('click', renderDialogElement.bind(null, pinData));
-      pinElement.addEventListener('focus', renderDialogElement.bind(null, pinData));
-      fragment.appendChild(pinElement);
+      fragment.appendChild(getPinMapElement(pinElements[i]));
     }
 
     pinMapBlock.appendChild(fragment);
@@ -240,7 +239,7 @@
     openDialog();
   });
   pinMapBlock.addEventListener('focus', pinMapBlockClickHandler, true);
-  pinMapBlock.addEventListener('blur', closeDialog, true);
+  // pinMapBlock.addEventListener('blur', closeDialog, true);
   pinMapBlock.addEventListener('keydown', onPinEnterPress);
   dialogClose.addEventListener('click', closeDialog);
   document.addEventListener('keydown', onDialogEscPress);
