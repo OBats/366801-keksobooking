@@ -15,8 +15,6 @@
     ],
     types: ['flat', 'house', 'bungalo'],
     checkInOut: ['12:00', '13:00', '14:00'],
-    checkInLiteral: ['После 12', 'После 13', 'После 14'],
-    checkOutLiteral: ['Выезд до 12', 'Выезд до 13', 'Выезд до 14'],
     features: [
       'wifi',
       'dishwasher',
@@ -137,6 +135,9 @@
 
     pinMapElement.appendChild(pinMapImage);
 
+    pinMapElement.addEventListener('click', renderDialogElement.bind(null, pinParams));
+    pinMapElement.addEventListener('focus', renderDialogElement.bind(null, pinParams));
+
     return pinMapElement;
   }
 
@@ -145,11 +146,7 @@
     var count = pinElements.length;
 
     for (var i = 0; i < count; i++) {
-      var pinData = pinElements[i];
-      var pinElement = getPinMapElement(pinData);
-      pinElement.addEventListener('click', renderDialogElement.bind(null, pinData));
-      pinElement.addEventListener('focus', renderDialogElement.bind(null, pinData));
-      fragment.appendChild(pinElement);
+      fragment.appendChild(getPinMapElement(pinElements[i]));
     }
 
     pinMapBlock.appendChild(fragment);
@@ -234,6 +231,7 @@
   var onPinEnterPress = function (event) {
     if (event.keyCode === KEY_CODES.ENTER) {
       openDialog();
+      pinMapBlockClickHandler(event);
     }
   };
 
@@ -242,8 +240,72 @@
     pinMapBlockClickHandler(event);
   });
   pinMapBlock.addEventListener('focus', pinMapBlockClickHandler, true);
-  pinMapBlock.addEventListener('blur', closeDialog, true);
+  // pinMapBlock.addEventListener('blur', closeDialog, true);
   pinMapBlock.addEventListener('keydown', onPinEnterPress);
   dialogClose.addEventListener('click', closeDialog);
   document.addEventListener('keydown', onDialogEscPress);
+
+
+  var timeInValue = document.querySelector('#timein');
+  var timeOutValue = document.querySelector('#timeout');
+
+  function syncTimeIn() {
+    var checkInOutTime = OFFERS_DETAILS.checkInOut;
+
+    for (var i = 0; i < checkInOutTime.length; i++) {
+      if (timeInValue.value === checkInOutTime[i]) {
+        timeOutValue.value = checkInOutTime[i];
+      }
+    }
+  }
+
+  function syncTimeOut() {
+    var checkInOutTime = OFFERS_DETAILS.checkInOut;
+
+    for (var i = 0; i < checkInOutTime.length; i++) {
+      if (timeOutValue.value === checkInOutTime[i]) {
+        timeInValue.value = checkInOutTime[i];
+      }
+    }
+  }
+
+  timeInValue.addEventListener('change', syncTimeIn);
+  timeOutValue.addEventListener('change', syncTimeOut);
+
+  var housingType = document.querySelector('#type');
+  var nightPrice = document.querySelector('#price');
+
+  function syncTypePrice() {
+    var types = OFFERS_DETAILS.types;
+    var rusHousingTypes = RUSSIAN_HOUSING_TYPES;
+
+    types.push('palace');
+    rusHousingTypes.palace = 'Дворец';
+
+    // for (var i = 0; i < types.length; i++) {
+    switch (housingType.value) {
+      case types[0]:
+        nightPrice.value = '1000';
+        nightPrice.min = nightPrice.value;
+        break;
+      case types[1]:
+        nightPrice.value = '5000';
+        nightPrice.min = nightPrice.value;
+        break;
+      case types[2]:
+        nightPrice.value = '0';
+        nightPrice.min = nightPrice.value;
+        break;
+      case types[3]:
+        nightPrice.value = '10000';
+        nightPrice.min = nightPrice.value;
+        break;
+      default:
+        nightPrice.value = '1000';
+        nightPrice.min = nightPrice.value;
+        break;
+    }
+    // };
+  }
+  housingType.addEventListener('change', syncTypePrice);
 })();
