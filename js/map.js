@@ -235,11 +235,11 @@
   };
 
   pinMapBlock.addEventListener('click', function (event) {
-    pinMapBlockClickHandler(event);
     openDialog();
+    pinMapBlockClickHandler(event);
   });
   pinMapBlock.addEventListener('focus', pinMapBlockClickHandler, true);
-  // pinMapBlock.addEventListener('blur', closeDialog, true);
+  pinMapBlock.addEventListener('blur', closeDialog, true);
   pinMapBlock.addEventListener('keydown', onPinEnterPress);
   dialogClose.addEventListener('click', closeDialog);
   document.addEventListener('keydown', onDialogEscPress);
