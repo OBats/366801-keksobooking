@@ -44,12 +44,13 @@
   var pinMapBlock = document.querySelector('.tokyo__pin-map');
   var offerDialog = document.querySelector('#offer-dialog');
   var dialogClose = offerDialog.querySelector('.dialog__close');
-  var timeInValue = document.querySelector('#timein');
-  var timeOutValue = document.querySelector('#timeout');
+  var focusedPinElement;
+  var focusedPinContent;
+  var selectedPin;
+  var timeIn = document.querySelector('#timein');
+  var timeOut = document.querySelector('#timeout');
   var housingType = document.querySelector('#type');
   var roomNumber = document.querySelector('#room_number');
-  var selectedPin;
-
 
   function createRandomArrayItemGetter(array) {
     var randomSource = array.slice();
@@ -130,17 +131,18 @@
     pinMapElement.classList.add('pin');
     pinMapElement.style.left = pinMapImageCoordinates.x;
     pinMapElement.style.top = pinMapImageCoordinates.y;
-    pinMapElement.setAttribute('tabindex', 0);
 
     pinMapImage.src = pinParams.author.avatar;
     pinMapImage.classList.add('rounded');
     pinMapImage.setAttribute('width', 40);
     pinMapImage.setAttribute('height', 40);
+    pinMapImage.setAttribute('tabindex', 0);
+    pinMapImage.setAttribute('tabindex', 0);
+    pinMapImage.addEventListener('focus', onPinFocus.bind(null, pinMapElement, pinParams));
+    pinMapImage.addEventListener('blur', onPinLoseFocus);
 
     pinMapElement.appendChild(pinMapImage);
-
-    pinMapElement.addEventListener('click', renderDialogElement.bind(null, pinParams));
-    pinMapElement.addEventListener('focus', renderDialogElement.bind(null, pinParams));
+    pinMapElement.addEventListener('click', onPinClick.bind(null, pinMapElement, pinParams));
 
     return pinMapElement;
   }
@@ -150,7 +152,14 @@
     var count = pinElements.length;
 
     for (var i = 0; i < count; i++) {
-      fragment.appendChild(getPinMapElement(pinElements[i]));
+      var pinData = pinElements[i];
+      var pinElement = getPinMapElement(pinData);
+      fragment.appendChild(pinElement);
+
+      if (i === 0) {
+        selectPin(pinElement);
+        openDialog(pinData);
+      }
     }
 
     pinMapBlock.appendChild(fragment);
@@ -198,64 +207,71 @@
     offerDialog.replaceChild(getDialogElement(offer), dialogPanel);
   }
 
-  var offers = getOffers(8);
-  renderPinMapElements(offers);
+  function setFocusedPin(pinElement, pinData) {
+    focusedPinElement = pinElement;
+    focusedPinContent = pinData;
+  }
 
+  function clearFocusedPin() {
+    focusedPinElement = null;
+    focusedPinContent = null;
+  }
 
-  var pinMapBlockClickHandler = function (event) {
+  function openDialog(offer) {
+    renderDialogElement(offer);
+    offerDialog.classList.remove('hidden');
+  }
+
+  function closeDialog() {
+    offerDialog.classList.add('hidden');
+  }
+
+  function selectPin(pinElement) {
+    clearSelectedPin(selectedPin);
+    selectedPin = pinElement;
+    selectedPin.classList.add('pin--active');
+  }
+
+  function clearSelectedPin() {
     if (selectedPin) {
       selectedPin.classList.remove('pin--active');
-    }
-
-    selectedPin = event.target;
-    while (selectedPin !== pinMapBlock) {
-      if (selectedPin.tagName === 'DIV') {
-        selectedPin.classList.add('pin--active');
-        return;
-      }
-      selectedPin = selectedPin.parentNode;
-    }
-  };
-
-  var openDialog = function () {
-    offerDialog.classList.remove('hidden');
-  };
-
-  var closeDialog = function () {
-    offerDialog.classList.add('hidden');
-    selectedPin.classList.remove('pin--active');
-  };
-
-  var onDialogEscPress = function (event) {
-    if (event.keyCode === KEY_CODES.ESC) {
-      closeDialog();
-    }
-  };
-
-  var onPinEnterPress = function (event) {
-    if (event.keyCode === KEY_CODES.ENTER) {
-      openDialog();
-      pinMapBlockClickHandler(event);
-    }
-  };
-
-  function syncTimeIn() {
-    var checkInOutTime = OFFERS_DETAILS.checkInOut;
-
-    for (var i = 0; i < checkInOutTime.length; i++) {
-      if (timeInValue.value === checkInOutTime[i]) {
-        timeOutValue.value = checkInOutTime[i];
-      }
+      selectedPin = null;
     }
   }
 
-  function syncTimeOut() {
-    var checkInOutTime = OFFERS_DETAILS.checkInOut;
+  function onPinFocus(pinElement, pinData) {
+    setFocusedPin(pinElement, pinData);
+  }
 
-    for (var i = 0; i < checkInOutTime.length; i++) {
-      if (timeOutValue.value === checkInOutTime[i]) {
-        timeInValue.value = checkInOutTime[i];
-      }
+  function onPinLoseFocus() {
+    clearFocusedPin();
+  }
+
+  function onPinClick(pinElement, pinData) {
+    selectPin(pinElement);
+    openDialog(pinData);
+  }
+
+  function onCloseDialog() {
+    closeDialog();
+    clearSelectedPin();
+  }
+
+  function onDialogEscPress(event) {
+    if (event.keyCode === KEY_CODES.ESC && selectedPin) {
+      onCloseDialog();
+    }
+  }
+
+  function onPinEnterPress(event) {
+    if (event.keyCode === KEY_CODES.ENTER && focusedPinElement) {
+      onPinClick(focusedPinElement, focusedPinContent);
+    }
+  }
+
+  function syncTimeIn() {
+    if (timeIn.value !== timeOut.value) {
+      timeOut.value = timeIn.value;
     }
   }
 
@@ -265,56 +281,38 @@
     switch (housingType.value) {
       case 'flat':
         nightPrice.value = '1000';
-        nightPrice.min = nightPrice.value;
         break;
       case 'house':
         nightPrice.value = '5000';
-        nightPrice.min = nightPrice.value;
         break;
       case 'palace':
         nightPrice.value = '10000';
-        nightPrice.min = nightPrice.value;
         break;
       default:
         nightPrice.value = '0';
-        nightPrice.min = nightPrice.value;
         break;
     }
+    nightPrice.min = nightPrice.value;
   }
 
   function syncRoomsWithCapacity() {
     var capacity = document.querySelector('#capacity');
 
-    switch (roomNumber.value) {
-      case '1':
-        capacity.value = '1';
-        break;
-      case '2':
-        capacity.value = '2';
-        break;
-      case '3':
-        capacity.value = '3';
-        break;
-      default:
-        capacity.value = '0';
-        break;
+    if (roomNumber.value === '100') {
+      capacity.value = '0';
+    } else {
+      capacity.value = roomNumber.value;
     }
   }
 
-  pinMapBlock.addEventListener('click', function (event) {
-    openDialog();
-    pinMapBlockClickHandler(event);
-  });
-  pinMapBlock.addEventListener('focus', pinMapBlockClickHandler, true);
-  pinMapBlock.addEventListener('blur', closeDialog, true);
+  dialogClose.addEventListener('click', onCloseDialog);
   pinMapBlock.addEventListener('keydown', onPinEnterPress);
-  dialogClose.addEventListener('click', closeDialog);
   document.addEventListener('keydown', onDialogEscPress);
 
-  timeInValue.addEventListener('change', syncTimeIn);
-  timeOutValue.addEventListener('change', syncTimeOut);
-
+  timeIn.addEventListener('change', syncTimeIn);
   housingType.addEventListener('change', syncTypeWithPrice);
-
   roomNumber.addEventListener('change', syncRoomsWithCapacity);
+
+  var offers = getOffers(8);
+  renderPinMapElements(offers);
 })();
