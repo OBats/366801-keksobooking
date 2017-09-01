@@ -31,10 +31,22 @@
     bungalo: 'Бунгало'
   };
 
+  var KEY_CODES = {
+    ESC: 27,
+    ENTER: 13
+  };
+
   var lodgeTemplate = document
       .querySelector('#lodge-template')
       .content
       .querySelector('.dialog__panel');
+
+  var pinMapBlock = document.querySelector('.tokyo__pin-map');
+  var offerDialog = document.querySelector('#offer-dialog');
+  var dialogClose = offerDialog.querySelector('.dialog__close');
+  var focusedPinElement;
+  var focusedPinContent;
+  var selectedPin;
 
 
   function createRandomArrayItemGetter(array) {
@@ -121,20 +133,32 @@
     pinMapImage.classList.add('rounded');
     pinMapImage.setAttribute('width', 40);
     pinMapImage.setAttribute('height', 40);
+    pinMapImage.setAttribute('tabindex', 0);
+    pinMapImage.setAttribute('tabindex', 0);
+    pinMapImage.addEventListener('focus', onPinFocus.bind(null, pinMapElement, pinParams));
+    pinMapImage.addEventListener('blur', onPinLoseFocus);
 
     pinMapElement.appendChild(pinMapImage);
+    pinMapElement.addEventListener('click', onPinClick.bind(null, pinMapElement, pinParams));
 
     return pinMapElement;
   }
 
   function renderPinMapElements(pinElements) {
     var fragment = document.createDocumentFragment();
-    var pinMapBlock = document.querySelector('.tokyo__pin-map');
     var count = pinElements.length;
 
     for (var i = 0; i < count; i++) {
-      fragment.appendChild(getPinMapElement(pinElements[i]));
+      var pinData = pinElements[i];
+      var pinElement = getPinMapElement(pinData);
+      fragment.appendChild(pinElement);
+
+      if (i === 0) {
+        selectPin(pinElement);
+        openDialog(pinData);
+      }
     }
+
     pinMapBlock.appendChild(fragment);
   }
 
@@ -173,7 +197,6 @@
   }
 
   function renderDialogElement(offer) {
-    var offerDialog = document.querySelector('#offer-dialog');
     var dialogPanel = offerDialog.querySelector('.dialog__panel');
 
     offerDialog.querySelector('.dialog__title > img').src = offer.author.avatar;
@@ -181,7 +204,72 @@
     offerDialog.replaceChild(getDialogElement(offer), dialogPanel);
   }
 
+  function setFocusedPin(pinElement, pinData) {
+    focusedPinElement = pinElement;
+    focusedPinContent = pinData;
+  }
+
+  function clearFocusedPin() {
+    focusedPinElement = null;
+    focusedPinContent = null;
+  }
+
+  function openDialog(offer) {
+    renderDialogElement(offer);
+    offerDialog.classList.remove('hidden');
+  }
+
+  function closeDialog() {
+    offerDialog.classList.add('hidden');
+  }
+
+  function selectPin(pinElement) {
+    clearSelectedPin(selectedPin);
+    selectedPin = pinElement;
+    selectedPin.classList.add('pin--active');
+  }
+
+  function clearSelectedPin() {
+    if (selectedPin) {
+      selectedPin.classList.remove('pin--active');
+      selectedPin = null;
+    }
+  }
+
+  function onPinFocus(pinElement, pinData) {
+    setFocusedPin(pinElement, pinData);
+  }
+
+  function onPinLoseFocus() {
+    clearFocusedPin();
+  }
+
+  function onPinClick(pinElement, pinData) {
+    selectPin(pinElement);
+    openDialog(pinData);
+  }
+
+  function onCloseDialog() {
+    closeDialog();
+    clearSelectedPin();
+  }
+
+  function onDialogEscPress(event) {
+    if (event.keyCode === KEY_CODES.ESC && selectedPin) {
+      onCloseDialog();
+    }
+  }
+
+  function onPinEnterPress(event) {
+    if (event.keyCode === KEY_CODES.ENTER && focusedPinElement) {
+      onPinClick(focusedPinElement, focusedPinContent);
+    }
+  }
+
+  dialogClose.addEventListener('click', onCloseDialog);
+  pinMapBlock.addEventListener('keydown', onPinEnterPress);
+  document.addEventListener('keydown', onDialogEscPress);
+
   var offers = getOffers(8);
   renderPinMapElements(offers);
-  renderDialogElement(offers[0]);
 })();
