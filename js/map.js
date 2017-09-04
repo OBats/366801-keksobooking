@@ -44,13 +44,14 @@
   var pinMapBlock = document.querySelector('.tokyo__pin-map');
   var offerDialog = document.querySelector('#offer-dialog');
   var dialogClose = offerDialog.querySelector('.dialog__close');
-  var focusedPinElement;
-  var focusedPinContent;
-  var selectedPin;
   var timeIn = document.querySelector('#timein');
   var timeOut = document.querySelector('#timeout');
   var housingType = document.querySelector('#type');
   var roomNumber = document.querySelector('#room_number');
+  var focusedPinElement;
+  var focusedPinContent;
+  var selectedPin;
+
 
   function createRandomArrayItemGetter(array) {
     var randomSource = array.slice();
@@ -136,7 +137,6 @@
     pinMapImage.classList.add('rounded');
     pinMapImage.setAttribute('width', 40);
     pinMapImage.setAttribute('height', 40);
-    pinMapImage.setAttribute('tabindex', 0);
     pinMapImage.setAttribute('tabindex', 0);
     pinMapImage.addEventListener('focus', onPinFocus.bind(null, pinMapElement, pinParams));
     pinMapImage.addEventListener('blur', onPinLoseFocus);
@@ -280,28 +280,47 @@
 
     switch (housingType.value) {
       case 'flat':
-        nightPrice.value = '1000';
+        nightPrice.min = '1000';
         break;
       case 'house':
-        nightPrice.value = '5000';
+        nightPrice.min = '5000';
         break;
       case 'palace':
-        nightPrice.value = '10000';
+        nightPrice.min = '10000';
         break;
       default:
-        nightPrice.value = '0';
+        nightPrice.min = '0';
         break;
     }
-    nightPrice.min = nightPrice.value;
+    nightPrice.value = nightPrice.value || nightPrice.min;
   }
 
   function syncRoomsWithCapacity() {
     var capacity = document.querySelector('#capacity');
+    var childrens = capacity.children;
+    var forOneQuest = childrens[2];
+    var forTwoQuests = childrens[1];
+    var forThreeQuests = childrens[0];
+    var notForQuests = childrens[3];
 
-    if (roomNumber.value === '100') {
-      capacity.value = '0';
+    capacity.value = roomNumber.value;
+
+    for (var i = 0; i < childrens.length; i++) {
+      childrens[i].setAttribute('disabled', null);
+    }
+
+    if (roomNumber.value === '1') {
+      forOneQuest.removeAttribute('disabled');
+    } else if (roomNumber.value === '2') {
+      forOneQuest.removeAttribute('disabled');
+      forTwoQuests.removeAttribute('disabled');
+    } else if (roomNumber.value === '3') {
+      forOneQuest.removeAttribute('disabled');
+      forTwoQuests.removeAttribute('disabled');
+      forThreeQuests.removeAttribute('disabled');
     } else {
-      capacity.value = roomNumber.value;
+      notForQuests.removeAttribute('disabled');
+      capacity.value = '0';
     }
   }
 
