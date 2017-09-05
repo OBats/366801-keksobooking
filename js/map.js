@@ -322,7 +322,7 @@
       }
 
       if (isSelected) {
-        capacityOption.setAttribute('selected', isSelected);
+        capacityOption.setAttribute('selected', '');
       }
     }
   }
