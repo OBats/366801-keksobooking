@@ -25,38 +25,12 @@
     ]
   };
 
-  function createRandomArrayItemGetter(array) {
-    var randomSource = array.slice();
-
-    return function () {
-      var randomNumber;
-      if (randomSource.length === 1) {
-        randomNumber = randomSource[0];
-        randomSource = array.slice();
-      } else {
-        var randomId = Math.floor(Math.random() * randomSource.length);
-        randomNumber = randomSource[randomId];
-        randomSource.splice(randomId, 1);
-      }
-      return randomNumber;
-    };
-  }
-
-  function getRandomNumber(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-  }
-
-  function getRandomArrayLength(array) {
-    var randomLength = array.length - Math.floor(Math.random() * array.length);
-    return array.slice(0, randomLength);
-  }
-
   window.data = {
     getOffers: function (offerAmount) {
-      var getRandomAvatar = createRandomArrayItemGetter(OFFERS_DETAILS['avatars']);
-      var getRandomTitle = createRandomArrayItemGetter(OFFERS_DETAILS['titles']);
-      var getRandomHousingType = createRandomArrayItemGetter(OFFERS_DETAILS['types']);
-      var getRandomCheckInOut = createRandomArrayItemGetter(OFFERS_DETAILS['checkInOut']);
+      var getRandomAvatar = window.utils.createRandomArrayItemGetter(OFFERS_DETAILS['avatars']);
+      var getRandomTitle = window.utils.createRandomArrayItemGetter(OFFERS_DETAILS['titles']);
+      var getRandomHousingType = window.utils.createRandomArrayItemGetter(OFFERS_DETAILS['types']);
+      var getRandomCheckInOut = window.utils.createRandomArrayItemGetter(OFFERS_DETAILS['checkInOut']);
       var randomFeatures = OFFERS_DETAILS['features'];
       var avatarPath = 'img/avatars/user0';
 
@@ -64,8 +38,8 @@
 
       for (var i = 0; i < offerAmount; i++) {
         var location = {
-          x: getRandomNumber(300, 900),
-          y: getRandomNumber(100, 500)
+          x: window.utils.getRandomNumber(300, 900),
+          y: window.utils.getRandomNumber(100, 500)
         };
 
         offers.push({
@@ -75,13 +49,13 @@
           offer: {
             title: getRandomTitle(),
             address: location.x + ', ' + location.y,
-            price: getRandomNumber(1000, 1000000),
+            price: window.utils.getRandomNumber(1000, 1000000),
             type: getRandomHousingType(),
-            rooms: getRandomNumber(1, 5),
-            quests: getRandomNumber(1, 10),
+            rooms: window.utils.getRandomNumber(1, 5),
+            quests: window.utils.getRandomNumber(1, 10),
             checkin: getRandomCheckInOut(),
             checkout: getRandomCheckInOut(),
-            features: getRandomArrayLength(randomFeatures),
+            features: window.utils.getRandomArrayLength(randomFeatures),
             description: '',
             photos: []
           },

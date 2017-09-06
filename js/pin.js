@@ -1,10 +1,6 @@
 'use strict';
 
 (function () {
-  var KEY_CODES = {
-    ESC: 27,
-    ENTER: 13
-  };
 
   var focusedPinElement;
   var focusedPinContent;
@@ -67,6 +63,10 @@
       selectedPin.classList.add('pin--active');
     },
 
+    hasSelectedPin: function () {
+      return selectedPin ? true : false;
+    },
+
     clearSelectedPin: function () {
       if (selectedPin) {
         selectedPin.classList.remove('pin--active');
@@ -75,14 +75,8 @@
     },
 
     onPinEnterPress: function (event) {
-      if (event.keyCode === KEY_CODES.ENTER && focusedPinElement) {
+      if (event.keyCode === window.utils.KEY_CODES.ENTER && focusedPinElement) {
         onPinClick(focusedPinElement, focusedPinContent);
-      }
-    },
-
-    onDialogEscPress: function (event) {
-      if (event.keyCode === KEY_CODES.ESC && selectedPin) {
-        window.map.onCloseDialog();
       }
     }
   };

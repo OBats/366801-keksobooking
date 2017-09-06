@@ -26,6 +26,12 @@
     offerDialog.classList.add('hidden');
   }
 
+  function onDialogEscPress(event) {
+    if (event.keyCode === window.utils.KEY_CODES.ESC && window.pin.hasSelectedPin()) {
+      window.map.onCloseDialog();
+    }
+  }
+
   window.map = {
     renderDialogElement: function (offer) {
       var dialogPanel = offerDialog.querySelector('.dialog__panel');
@@ -51,5 +57,5 @@
 
   dialogClose.addEventListener('click', window.map.onCloseDialog);
   pinMapBlock.addEventListener('keydown', window.pin.onPinEnterPress);
-  document.addEventListener('keydown', window.pin.onDialogEscPress);
+  document.addEventListener('keydown', onDialogEscPress);
 })();
