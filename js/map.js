@@ -3,7 +3,7 @@
 (function () {
   var pinMapBlock = document.querySelector('.tokyo__pin-map');
   var dialogClose = document.querySelector('.dialog__close');
-
+  var offerDialog = document.querySelector('#offer-dialog');
 
   function renderPinMapElements(pinElements) {
     var fragment = document.createDocumentFragment();
@@ -16,35 +16,40 @@
 
       if (i === 0) {
         window.pin.selectPin(pinElement);
-        window.pin.openDialog(pinData);
+        window.map.openDialog(pinData);
       }
     }
     pinMapBlock.appendChild(fragment);
   }
 
+  function closeDialog() {
+    offerDialog.classList.add('hidden');
+  }
+
   window.map = {
-    timeIn: document.querySelector('#timein'),
-    timeOut: document.querySelector('#timeout'),
-    housingType: document.querySelector('#type'),
-    roomsNumber: document.querySelector('#room_number'),
-    offerDialog: document.querySelector('#offer-dialog'),
     renderDialogElement: function (offer) {
-      var dialogPanel = this.offerDialog.querySelector('.dialog__panel');
+      var dialogPanel = offerDialog.querySelector('.dialog__panel');
 
-      this.offerDialog.querySelector('.dialog__title > img').src = offer.author.avatar;
+      offerDialog.querySelector('.dialog__title > img').src = offer.author.avatar;
 
-      this.offerDialog.replaceChild(window.card.getDialogElement(offer), dialogPanel);
+      offerDialog.replaceChild(window.card.getDialogElement(offer), dialogPanel);
+    },
+
+    openDialog: function (offer) {
+      window.map.renderDialogElement(offer);
+      offerDialog.classList.remove('hidden');
+    },
+
+    onCloseDialog: function () {
+      closeDialog();
+      window.pin.clearSelectedPin();
     }
   };
 
-  dialogClose.addEventListener('click', window.pin.onCloseDialog);
-  pinMapBlock.addEventListener('keydown', window.pin.onPinEnterPress);
-  document.addEventListener('keydown', window.pin.onDialogEscPress);
-
-  window.map.timeIn.addEventListener('change', window.form.syncTimeIn);
-  window.map.housingType.addEventListener('change', window.form.syncTypeWithPrice);
-  window.map.roomsNumber.addEventListener('change', window.form.syncRoomsWithCapacity);
-
   var offers = window.data.getOffers(8);
   renderPinMapElements(offers);
+
+  dialogClose.addEventListener('click', window.map.onCloseDialog);
+  pinMapBlock.addEventListener('keydown', window.pin.onPinEnterPress);
+  document.addEventListener('keydown', window.pin.onDialogEscPress);
 })();
