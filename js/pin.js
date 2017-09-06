@@ -20,13 +20,6 @@
     focusedPinContent = null;
   }
 
-  function clearSelectedPin() {
-    if (selectedPin) {
-      selectedPin.classList.remove('pin--active');
-      selectedPin = null;
-    }
-  }
-
   function onPinFocus(pinElement, pinData) {
     setFocusedPin(pinElement, pinData);
   }
@@ -37,17 +30,13 @@
 
   function onPinClick(pinElement, pinData) {
     window.pin.selectPin(pinElement);
-    window.pin.openDialog(pinData);
-  }
-
-  function closeDialog() {
-    window.map.offerDialog.classList.add('hidden');
+    window.map.openDialog(pinData);
   }
 
   window.pin = {
     getPinMapElement: function (pinParams) {
       var pinMapElement = document.createElement('div');
-      var pinMapImage = document.createElement('img');
+      var pinMapImageElement = document.createElement('img');
 
       var pinMapImageCoordinates = {
         x: pinParams.location.x + (56 * 0.5) + 'px',
@@ -58,45 +47,42 @@
       pinMapElement.style.left = pinMapImageCoordinates.x;
       pinMapElement.style.top = pinMapImageCoordinates.y;
 
-      pinMapImage.src = pinParams.author.avatar;
-      pinMapImage.classList.add('rounded');
-      pinMapImage.setAttribute('width', 40);
-      pinMapImage.setAttribute('height', 40);
-      pinMapImage.setAttribute('tabindex', 0);
-      pinMapImage.addEventListener('focus', onPinFocus.bind(null, pinMapElement, pinParams));
-      pinMapImage.addEventListener('blur', onPinLoseFocus);
+      pinMapImageElement.src = pinParams.author.avatar;
+      pinMapImageElement.classList.add('rounded');
+      pinMapImageElement.setAttribute('width', 40);
+      pinMapImageElement.setAttribute('height', 40);
+      pinMapImageElement.setAttribute('tabindex', 0);
+      pinMapImageElement.addEventListener('focus', onPinFocus.bind(null, pinMapElement, pinParams));
+      pinMapImageElement.addEventListener('blur', onPinLoseFocus);
 
-      pinMapElement.appendChild(pinMapImage);
+      pinMapElement.appendChild(pinMapImageElement);
       pinMapElement.addEventListener('click', onPinClick.bind(null, pinMapElement, pinParams));
 
       return pinMapElement;
     },
 
     selectPin: function (pinElement) {
-      clearSelectedPin(selectedPin);
+      this.clearSelectedPin(selectedPin);
       selectedPin = pinElement;
       selectedPin.classList.add('pin--active');
     },
 
-    openDialog: function (offer) {
-      window.map.renderDialogElement(offer);
-      window.map.offerDialog.classList.remove('hidden');
-    },
-
-    onCloseDialog: function () {
-      closeDialog();
-      clearSelectedPin();
-    },
-
-    onDialogEscPress: function (event) {
-      if (event.keyCode === KEY_CODES.ESC && selectedPin) {
-        window.pin.onCloseDialog();
+    clearSelectedPin: function () {
+      if (selectedPin) {
+        selectedPin.classList.remove('pin--active');
+        selectedPin = null;
       }
     },
 
     onPinEnterPress: function (event) {
       if (event.keyCode === KEY_CODES.ENTER && focusedPinElement) {
         onPinClick(focusedPinElement, focusedPinContent);
+      }
+    },
+
+    onDialogEscPress: function (event) {
+      if (event.keyCode === KEY_CODES.ESC && selectedPin) {
+        window.map.onCloseDialog();
       }
     }
   };
