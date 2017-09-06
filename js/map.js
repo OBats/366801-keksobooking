@@ -1,12 +1,10 @@
 'use strict';
 
 (function () {
-  var mapEdgesParams = {
-    mapMarginBottom: 40,
-    mapStartEdge: 0,
-    mapLeftEdge: 1200 - window.utils.PIN_MAIN_SIZE.x,
-    mapBottomEdge: 700 - window.utils.PIN_MAIN_SIZE.y - 40
-  };
+  var mapBottomMargin = 40;
+  var mapStartEdge = 0;
+  var mapLeftEdge = 1200 - window.utils.PIN_MAIN_SIZE.x;
+  var mapBottomEdge = 700 - window.utils.PIN_MAIN_SIZE.y - mapBottomMargin;
 
   var pinMapBlockElement = document.querySelector('.tokyo__pin-map');
   var pinMapMainElement = pinMapBlockElement.querySelector('.pin__main');
@@ -66,11 +64,11 @@
         y: pinMapMainElement.offsetTop - shift.y
       };
 
-      if (mapEdgesParams.mapStartEdge < currentCoords.x && currentCoords.x < mapEdgesParams.mapLeftEdge) {
+      if (mapStartEdge < currentCoords.x && currentCoords.x < mapLeftEdge) {
         pinMapMainElement.style.left = currentCoords.x + 'px';
       }
 
-      if (mapEdgesParams.mapStartEdge < currentCoords.y && currentCoords.y < mapEdgesParams.mapBottomEdge) {
+      if (mapStartEdge < currentCoords.y && currentCoords.y < mapBottomEdge) {
         pinMapMainElement.style.top = currentCoords.y + 'px';
       }
 
