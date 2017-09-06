@@ -44,7 +44,6 @@
         offerDialogTemplate.querySelector('.lodge__features')
             .appendChild(emptySpan);
       }
-
       return offerDialogTemplate;
     }
   };
