@@ -1,9 +1,17 @@
 'use strict';
 
 (function () {
-  var pinMapBlock = document.querySelector('.tokyo__pin-map');
-  var dialogClose = document.querySelector('.dialog__close');
-  var offerDialog = document.querySelector('#offer-dialog');
+  var mapEdgesParams = {
+    mapMarginBottom: 40,
+    mapStartEdge: 0,
+    mapLeftEdge: 1200 - window.utils.PIN_MAIN_SIZE.x,
+    mapBottomEdge: 700 - window.utils.PIN_MAIN_SIZE.y - 40
+  };
+
+  var pinMapBlockElement = document.querySelector('.tokyo__pin-map');
+  var pinMapMainElement = pinMapBlockElement.querySelector('.pin__main');
+  var dialogCloseElement = document.querySelector('.dialog__close');
+  var offerDialogElement = document.querySelector('#offer-dialog');
 
   function renderPinMapElements(pinElements) {
     var fragment = document.createDocumentFragment();
@@ -19,11 +27,11 @@
         window.map.openDialog(pinData);
       }
     }
-    pinMapBlock.appendChild(fragment);
+    pinMapBlockElement.appendChild(fragment);
   }
 
   function closeDialog() {
-    offerDialog.classList.add('hidden');
+    offerDialogElement.classList.add('hidden');
   }
 
   function onDialogEscPress(event) {
@@ -32,18 +40,68 @@
     }
   }
 
+  function onPinMapMainElementMousedown(event) {
+    event.preventDefault();
+
+    var startCoords = {
+      x: event.clientX,
+      y: event.clientY
+    };
+
+    function onMouseMove(moveEvent) {
+      moveEvent.preventDefault();
+
+      var shift = {
+        x: startCoords.x - moveEvent.clientX,
+        y: startCoords.y - moveEvent.clientY
+      };
+
+      startCoords = {
+        x: moveEvent.clientX,
+        y: moveEvent.clientY
+      };
+
+      var currentCoords = {
+        x: pinMapMainElement.offsetLeft - shift.x,
+        y: pinMapMainElement.offsetTop - shift.y
+      };
+
+      if (mapEdgesParams.mapStartEdge < currentCoords.x && currentCoords.x < mapEdgesParams.mapLeftEdge) {
+        pinMapMainElement.style.left = currentCoords.x + 'px';
+      }
+
+      if (mapEdgesParams.mapStartEdge < currentCoords.y && currentCoords.y < mapEdgesParams.mapBottomEdge) {
+        pinMapMainElement.style.top = currentCoords.y + 'px';
+      }
+
+      pinMapMainElement.style.zIndex = '1';
+
+      window.form.setAddress(currentCoords);
+    }
+
+    function onMouseUp(upEvent) {
+      upEvent.preventDefault();
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }
+
   window.map = {
     renderDialogElement: function (offer) {
-      var dialogPanel = offerDialog.querySelector('.dialog__panel');
+      var dialogPanel = offerDialogElement.querySelector('.dialog__panel');
 
-      offerDialog.querySelector('.dialog__title > img').src = offer.author.avatar;
+      offerDialogElement.querySelector('.dialog__title > img').src = offer.author.avatar;
 
-      offerDialog.replaceChild(window.card.getDialogElement(offer), dialogPanel);
+      offerDialogElement.replaceChild(window.card.getDialogElement(offer), dialogPanel);
     },
 
     openDialog: function (offer) {
       window.map.renderDialogElement(offer);
-      offerDialog.classList.remove('hidden');
+      offerDialogElement.classList.remove('hidden');
     },
 
     onCloseDialog: function () {
@@ -55,7 +113,8 @@
   var offers = window.data.getOffers(8);
   renderPinMapElements(offers);
 
-  dialogClose.addEventListener('click', window.map.onCloseDialog);
-  pinMapBlock.addEventListener('keydown', window.pin.onPinEnterPress);
+  pinMapMainElement.addEventListener('mousedown', onPinMapMainElementMousedown);
+  dialogCloseElement.addEventListener('click', window.map.onCloseDialog);
+  pinMapBlockElement.addEventListener('keydown', window.pin.onPinEnterPress);
   document.addEventListener('keydown', onDialogEscPress);
 })();
