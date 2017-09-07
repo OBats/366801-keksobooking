@@ -1,11 +1,20 @@
 'use strict';
 
 (function () {
-  var mapBottomMargin = 40;
-  var mapStartEdge = 0;
-  var mapLeftEdge = 1200 - window.utils.PIN_MAIN_SIZE.x;
-  var mapBottomEdge = 700 - window.utils.PIN_MAIN_SIZE.y - mapBottomMargin;
+  var MAP_TOP_MARGIN = 70;
+  var MAP_BOTTOM_MARGIN = 40;
 
+  var isDragging = false;
+  var startCoordsX;
+  var startCoordsY;
+  var pinMapMainElementWidth;
+  var pinMapMainElementHeight;
+  var mapMinX;
+  var mapMaxX;
+  var mapMinY;
+  var mapMaxY;
+
+  var tokyoMapAreaElement = document.querySelector('.tokyo > img');
   var pinMapBlockElement = document.querySelector('.tokyo__pin-map');
   var pinMapMainElement = pinMapBlockElement.querySelector('.pin__main');
   var dialogCloseElement = document.querySelector('.dialog__close');
@@ -41,51 +50,68 @@
   function onPinMapMainElementMousedown(event) {
     event.preventDefault();
 
-    var startCoords = {
-      x: event.clientX,
-      y: event.clientY
-    };
+    isDragging = true;
+    startCoordsX = event.clientX;
+    startCoordsY = event.clientY;
 
-    function onMouseMove(moveEvent) {
-      moveEvent.preventDefault();
+    pinMapMainElementWidth = pinMapMainElement.offsetWidth;
+    pinMapMainElementHeight = pinMapMainElement.offsetHeight;
+    mapMinX = tokyoMapAreaElement.offsetLeft;
+    mapMaxX = tokyoMapAreaElement.offsetWidth - pinMapMainElementWidth;
+    mapMinY = tokyoMapAreaElement.offsetTop + MAP_TOP_MARGIN;
+    mapMaxY = tokyoMapAreaElement.offsetHeight - pinMapMainElementHeight - MAP_BOTTOM_MARGIN;
+  }
 
-      var shift = {
-        x: startCoords.x - moveEvent.clientX,
-        y: startCoords.y - moveEvent.clientY
-      };
+  function onMouseUp() {
+    isDragging = false;
+  }
 
-      startCoords = {
-        x: moveEvent.clientX,
-        y: moveEvent.clientY
-      };
+  function onMouseMove(event) {
+    event.preventDefault();
+
+    if (isDragging) {
 
       var currentCoords = {
-        x: pinMapMainElement.offsetLeft - shift.x,
-        y: pinMapMainElement.offsetTop - shift.y
+        x: event.clientX,
+        y: event.clientY
       };
 
-      if (mapStartEdge < currentCoords.x && currentCoords.x < mapLeftEdge) {
-        pinMapMainElement.style.left = currentCoords.x + 'px';
+      var shift = {
+        x: currentCoords.x - startCoordsX,
+        y: currentCoords.y - startCoordsY
+      };
+
+      var newCoords = {
+        x: pinMapMainElement.offsetLeft + shift.x,
+        y: pinMapMainElement.offsetTop + shift.y
+      };
+
+      if (newCoords.x > mapMaxX) {
+        newCoords.x = mapMaxX;
+      } else if (newCoords.x < mapMinX) {
+        newCoords.x = mapMinX;
       }
 
-      if (mapStartEdge < currentCoords.y && currentCoords.y < mapBottomEdge) {
-        pinMapMainElement.style.top = currentCoords.y + 'px';
+      if (newCoords.y > mapMaxY) {
+        newCoords.y = mapMaxY;
+      } else if (newCoords.y < mapMinY) {
+        newCoords.y = mapMinY;
       }
 
+      pinMapMainElement.style.left = newCoords.x + 'px';
+      pinMapMainElement.style.top = newCoords.y + 'px';
       pinMapMainElement.style.zIndex = '1';
 
-      window.form.setAddress(currentCoords);
+      startCoordsX = currentCoords.x;
+      startCoordsY = currentCoords.y;
+
+      var addressCoords = {
+        x: newCoords.x + pinMapMainElement.offsetWidth / 2,
+        y: newCoords.y + pinMapMainElement.offsetHeight
+      };
+
+      window.form.setAddress(addressCoords);
     }
-
-    function onMouseUp(upEvent) {
-      upEvent.preventDefault();
-
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    }
-
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
   }
 
   window.map = {
@@ -112,6 +138,8 @@
   renderPinMapElements(offers);
 
   pinMapMainElement.addEventListener('mousedown', onPinMapMainElementMousedown);
+  document.addEventListener('mouseup', onMouseUp);
+  document.addEventListener('mousemove', onMouseMove);
   dialogCloseElement.addEventListener('click', window.map.onCloseDialog);
   pinMapBlockElement.addEventListener('keydown', window.pin.onPinEnterPress);
   document.addEventListener('keydown', onDialogEscPress);
