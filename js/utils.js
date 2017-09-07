@@ -7,11 +7,6 @@
       ENTER: 13
     },
 
-    PIN_MAIN_SIZE: {
-      x: 75,
-      y: 94
-    },
-
     createRandomArrayItemGetter: function (array) {
       var randomSource = array.slice();
 
