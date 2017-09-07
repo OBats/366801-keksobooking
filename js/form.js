@@ -67,8 +67,8 @@
 
   window.form = {
     setAddress: function (coords) {
-      addressInputElement.value = 'x: ' + (coords.x + window.utils.PIN_MAIN_SIZE.x * 0.5) +
-      ', ' + 'y: ' + (coords.y + window.utils.PIN_MAIN_SIZE.y);
+      addressInputElement.value = 'x: ' + coords.x +
+      ', ' + 'y: ' + coords.y;
     }
   };
 
