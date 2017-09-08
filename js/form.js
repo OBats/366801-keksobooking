@@ -1,11 +1,11 @@
 'use strict';
 
 (function () {
-
   var timeIn = document.querySelector('#timein');
   var timeOut = document.querySelector('#timeout');
   var housingType = document.querySelector('#type');
   var roomsNumber = document.querySelector('#room_number');
+  var addressInputElement = document.querySelector('#address');
 
   function syncTimeIn() {
     if (timeIn.value !== timeOut.value) {
@@ -64,6 +64,13 @@
       }
     }
   }
+
+  window.form = {
+    setAddress: function (coords) {
+      addressInputElement.value = 'x: ' + coords.x +
+      ', ' + 'y: ' + coords.y;
+    }
+  };
 
   timeIn.addEventListener('change', syncTimeIn);
   housingType.addEventListener('change', syncTypeWithPrice);
