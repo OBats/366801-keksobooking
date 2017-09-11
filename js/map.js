@@ -115,16 +115,8 @@
   }
 
   window.map = {
-    renderDialogElement: function (offer) {
-      var dialogPanel = offerDialogElement.querySelector('.dialog__panel');
-
-      offerDialogElement.querySelector('.dialog__title > img').src = offer.author.avatar;
-
-      offerDialogElement.replaceChild(window.card.getDialogElement(offer), dialogPanel);
-    },
-
     openDialog: function (offer) {
-      window.map.renderDialogElement(offer);
+      window.showCard.showCard(offer, offerDialogElement);
       offerDialogElement.classList.remove('hidden');
     },
 
