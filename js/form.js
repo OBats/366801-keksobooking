@@ -40,19 +40,19 @@
   );
 
   window.synchronizeFields(
+      timeOutElement,
+      timeInElement,
+      ['12:00', '13:00', '14:00'],
+      ['12:00', '13:00', '14:00'],
+      syncOptionsValues
+  );
+
+  window.synchronizeFields(
       housingTypeElement,
       pricePerNightElement,
       ['flat', 'house', 'palace', 'bungalo'],
       ['1000', '5000', '10000', '0'],
       syncMinValue
-  );
-
-  window.synchronizeFields(
-      timeInElement,
-      timeOutElement,
-      ['12:00', '13:00', '14:00'],
-      ['12:00', '13:00', '14:00'],
-      syncOptionsValues
   );
 
   window.synchronizeFields(
