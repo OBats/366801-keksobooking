@@ -14,7 +14,7 @@
       .querySelector('.dialog__panel');
 
   window.card = {
-    getDialogElement: function (element) {
+    createCard: function (element) {
       var offerDialogTemplate = lodgeTemplate.cloneNode(true);
       var offerFeatures = element.offer.features;
 
