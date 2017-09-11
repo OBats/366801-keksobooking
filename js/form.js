@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var formElement = document.querySelector('.notice__form');
   var timeInElement = document.querySelector('#timein');
   var timeOutElement = document.querySelector('#timeout');
   var housingTypeElement = document.querySelector('#type');
@@ -30,6 +31,34 @@
       }
     });
   }
+
+  function onSuccessSend() {
+    var successMsgElement = document.createElement('div');
+    successMsgElement.style.position = 'fixed';
+    successMsgElement.style.left = 0;
+    successMsgElement.style.right = 0;
+    successMsgElement.style.zIndex = '100';
+    successMsgElement.style.margin = '0 auto';
+    successMsgElement.style.fontSize = '25px';
+    successMsgElement.style.color = '#fff';
+    successMsgElement.style.textAlign = 'center';
+    successMsgElement.style.backgroundColor = 'green';
+
+    successMsgElement.textContent = 'Все ОК. Данные отправлены!';
+    document.body.insertAdjacentElement('afterbegin', successMsgElement);
+
+    setTimeout(function () {
+      successMsgElement.remove();
+    }, 3000);
+
+    formElement.reset();
+  }
+
+  formElement.addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    window.backend.save(new FormData(formElement), onSuccessSend, window.map.onErrorLoad);
+  });
 
   window.synchronizeFields(
       timeInElement,
