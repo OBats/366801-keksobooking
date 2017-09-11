@@ -116,7 +116,7 @@
 
   window.map = {
     openDialog: function (offer) {
-      window.showCard.showCard(offer, offerDialogElement);
+      window.showCard(offer, offerDialogElement);
       offerDialogElement.classList.remove('hidden');
     },
 
