@@ -30,7 +30,7 @@
       lodgeAddress.textContent = element.offer.address;
       lodgePrice.textContent = element.offer.price + ' \u20BD/ночь';
       lodgeType.textContent = RUSSIAN_HOUSING_TYPES[element.offer.type];
-      lodgeRoomsAndGuests.textContent = 'Для ' + element.offer.quests +
+      lodgeRoomsAndGuests.textContent = 'Для ' + element.offer.guests +
           ' гостей в ' + element.offer.rooms + ' комнатах';
       lodgeCheckinTime.textContent = 'Заезд после ' + element.offer.checkin +
           ', выезд до ' + element.offer.checkout;

@@ -7,6 +7,26 @@
       ENTER: 13
     },
 
+    showOverlayMsg: function (bgColor, msgText) {
+      var msgElement = document.createElement('div');
+      msgElement.style.position = 'fixed';
+      msgElement.style.left = 0;
+      msgElement.style.right = 0;
+      msgElement.style.zIndex = '100';
+      msgElement.style.margin = '0 auto';
+      msgElement.style.fontSize = '25px';
+      msgElement.style.color = '#fff';
+      msgElement.style.textAlign = 'center';
+      msgElement.style.backgroundColor = bgColor;
+
+      msgElement.textContent = msgText;
+      document.body.insertAdjacentElement('afterbegin', msgElement);
+
+      setTimeout(function () {
+        msgElement.remove();
+      }, 5000);
+    },
+
     createRandomArrayItemGetter: function (array) {
       var randomSource = array.slice();
 

@@ -114,6 +114,10 @@
     }
   }
 
+  function onLoadFailure(msgText) {
+    window.utils.showOverlayMsg('red', msgText);
+  }
+
   window.map = {
     openDialog: function (offer) {
       window.showCard(offer, offerDialogElement);
@@ -123,11 +127,10 @@
     onCloseDialog: function () {
       closeDialog();
       window.pin.clearSelectedPin();
-    }
+    },
   };
 
-  var offers = window.data.getOffers(8);
-  renderPinMapElements(offers);
+  window.backend.load(renderPinMapElements, onLoadFailure);
 
   pinMapMainElement.addEventListener('mousedown', onPinMapMainElementMousedown);
   document.addEventListener('mouseup', onMouseUp);

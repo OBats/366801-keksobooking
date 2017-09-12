@@ -1,12 +1,13 @@
 'use strict';
 
 (function () {
-  var timeInElement = document.querySelector('#timein');
-  var timeOutElement = document.querySelector('#timeout');
-  var housingTypeElement = document.querySelector('#type');
-  var roomsNumberElement = document.querySelector('#room_number');
-  var guestsNumberElement = document.querySelector('#capacity');
-  var pricePerNightElement = document.querySelector('#price');
+  var formElement = document.querySelector('.notice__form');
+  var timeInElement = formElement.querySelector('#timein');
+  var timeOutElement = formElement.querySelector('#timeout');
+  var housingTypeElement = formElement.querySelector('#type');
+  var roomsNumberElement = formElement.querySelector('#room_number');
+  var guestsNumberElement = formElement.querySelector('#capacity');
+  var pricePerNightElement = formElement.querySelector('#price');
 
   function syncOptionsValues(element, value) {
     element.value = value;
@@ -30,6 +31,20 @@
       }
     });
   }
+
+  function submitSuccess() {
+    window.utils.showOverlayMsg('green', 'Все ОК. Данные отправлены!');
+    formElement.reset();
+  }
+
+  function submitFailure() {
+    window.utils.showOverlayMsg('red', 'Ошибка! Кажется, Вы что-то не то ввели.');
+  }
+
+  formElement.addEventListener('submit', function (event) {
+    event.preventDefault();
+    window.backend.save(new FormData(formElement), submitSuccess, submitFailure);
+  });
 
   window.synchronizeFields(
       timeInElement,
@@ -66,8 +81,7 @@
   window.form = {
     setAddress: function (coords) {
       var addressInputElement = document.querySelector('#address');
-      addressInputElement.value = 'x: ' + coords.x +
-      ', ' + 'y: ' + coords.y;
+      addressInputElement.value = 'x: ' + coords.x + ', y: ' + coords.y;
     }
   };
 })();

@@ -35,8 +35,8 @@
       var pinMapImageElement = document.createElement('img');
 
       var pinMapImageCoordinates = {
-        x: pinParams.location.x + (56 * 0.5) + 'px',
-        y: pinParams.location.y + 75 + 'px'
+        x: pinParams.location.x - (56 * 0.5) + 'px',
+        y: pinParams.location.y - 75 + 'px'
       };
 
       pinMapElement.classList.add('pin');
