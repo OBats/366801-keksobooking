@@ -114,6 +114,10 @@
     }
   }
 
+  function onLoadFailure(msgText) {
+    window.utils.showOverlayMsg('red', msgText);
+  }
+
   window.map = {
     openDialog: function (offer) {
       window.showCard(offer, offerDialogElement);
@@ -126,7 +130,7 @@
     },
   };
 
-  window.backend.load(renderPinMapElements, window.utils.showOverlayMsg);
+  window.backend.load(renderPinMapElements, onLoadFailure);
 
   pinMapMainElement.addEventListener('mousedown', onPinMapMainElementMousedown);
   document.addEventListener('mouseup', onMouseUp);
