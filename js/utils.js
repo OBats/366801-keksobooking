@@ -7,15 +7,7 @@
       ENTER: 13
     },
 
-    overlayMsgParams: {
-      bgColorGreen: 'green',
-      bgColorRed: 'red',
-      msgOnSuccess: 'Все ОК. Данные отправлены!',
-      msgOnErrorForm: 'Ошибка! Кажется, Вы что-то не то ввели.',
-      msgOnErrorConnection: 'Произошла ошибка соединения'
-    },
-
-    showOverlayMsg: function (bgColor, msgText, resetForm) {
+    showOverlayMsg: function (bgColor, msgText) {
       var msgElement = document.createElement('div');
       msgElement.style.position = 'fixed';
       msgElement.style.left = 0;
@@ -30,13 +22,9 @@
       msgElement.textContent = msgText;
       document.body.insertAdjacentElement('afterbegin', msgElement);
 
-      if (resetForm) {
-        setTimeout(function () {
-          msgElement.remove();
-        }, 3000);
-
-        resetForm();
-      }
+      setTimeout(function () {
+        msgElement.remove();
+      }, 5000);
     },
 
     createRandomArrayItemGetter: function (array) {
