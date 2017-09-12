@@ -11,18 +11,18 @@
       if (xhr.status === 200) {
         onLoad(xhr.response);
       } else {
-        onError('red', 'Что-то пошло не так. Попробуйте еще раз');
+        onError('Что-то пошло не так. Попробуйте еще раз');
       }
     });
 
     xhr.addEventListener('error', function () {
-      onError('red', 'Произошла ошибка соединения');
+      onError('Произошла ошибка соединения');
     });
 
     xhr.addEventListener('timeout', function () {
       var msgText = 'Запрос не успел выполниться за ' + xhr.timeout + 'мс';
 
-      onError('red', msgText);
+      onError(msgText);
     });
 
     xhr.timeout = 10000;
