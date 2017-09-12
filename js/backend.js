@@ -9,33 +9,20 @@
 
     xhr.addEventListener('load', function () {
       if (xhr.status === 200) {
-        if (xhr.responseURL === SERVER_URL) {
-          onLoad(
-              window.utils.overlayMsgParams.bgColorGreen,
-              window.utils.overlayMsgParams.msgOnSuccess,
-              window.form.resetForm
-          );
-        } else {
-          onLoad(xhr.response);
-        }
+        onLoad(xhr.response);
       } else {
-        onError(
-            window.utils.overlayMsgParams.bgColorRed,
-            window.utils.overlayMsgParams.msgOnErrorForm
-        );
+        onError('red', 'Что-то пошло не так. Попробуйте еще раз');
       }
     });
 
     xhr.addEventListener('error', function () {
-      onError(
-          window.utils.overlayMsgParams.bgColorRed,
-          window.utils.overlayMsgParams.msgOnErrorConnection
-      );
+      onError('red', 'Произошла ошибка соединения');
     });
 
     xhr.addEventListener('timeout', function () {
       var msgText = 'Запрос не успел выполниться за ' + xhr.timeout + 'мс';
-      onError(window.utils.overlayMsgParams.bgColorRed, msgText);
+
+      onError('red', msgText);
     });
 
     xhr.timeout = 10000;
