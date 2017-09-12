@@ -124,25 +124,9 @@
       closeDialog();
       window.pin.clearSelectedPin();
     },
-
-    onErrorLoad: function (errorMsg) {
-      var errorMsgElement = document.createElement('div');
-      errorMsgElement.style.position = 'fixed';
-      errorMsgElement.style.left = 0;
-      errorMsgElement.style.right = 0;
-      errorMsgElement.style.zIndex = '100';
-      errorMsgElement.style.margin = '0 auto';
-      errorMsgElement.style.fontSize = '25px';
-      errorMsgElement.style.color = '#fff';
-      errorMsgElement.style.textAlign = 'center';
-      errorMsgElement.style.backgroundColor = 'red';
-
-      errorMsgElement.textContent = errorMsg;
-      document.body.insertAdjacentElement('afterbegin', errorMsgElement);
-    }
   };
 
-  window.backend.load(renderPinMapElements, window.map.onErrorLoad);
+  window.backend.load(renderPinMapElements, window.utils.showOverlayMsg);
 
   pinMapMainElement.addEventListener('mousedown', onPinMapMainElementMousedown);
   document.addEventListener('mouseup', onMouseUp);

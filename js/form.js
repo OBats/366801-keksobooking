@@ -2,12 +2,12 @@
 
 (function () {
   var formElement = document.querySelector('.notice__form');
-  var timeInElement = document.querySelector('#timein');
-  var timeOutElement = document.querySelector('#timeout');
-  var housingTypeElement = document.querySelector('#type');
-  var roomsNumberElement = document.querySelector('#room_number');
-  var guestsNumberElement = document.querySelector('#capacity');
-  var pricePerNightElement = document.querySelector('#price');
+  var timeInElement = formElement.querySelector('#timein');
+  var timeOutElement = formElement.querySelector('#timeout');
+  var housingTypeElement = formElement.querySelector('#type');
+  var roomsNumberElement = formElement.querySelector('#room_number');
+  var guestsNumberElement = formElement.querySelector('#capacity');
+  var pricePerNightElement = formElement.querySelector('#price');
 
   function syncOptionsValues(element, value) {
     element.value = value;
@@ -32,32 +32,14 @@
     });
   }
 
-  function onSuccessSend() {
-    var successMsgElement = document.createElement('div');
-    successMsgElement.style.position = 'fixed';
-    successMsgElement.style.left = 0;
-    successMsgElement.style.right = 0;
-    successMsgElement.style.zIndex = '100';
-    successMsgElement.style.margin = '0 auto';
-    successMsgElement.style.fontSize = '25px';
-    successMsgElement.style.color = '#fff';
-    successMsgElement.style.textAlign = 'center';
-    successMsgElement.style.backgroundColor = 'green';
-
-    successMsgElement.textContent = 'Все ОК. Данные отправлены!';
-    document.body.insertAdjacentElement('afterbegin', successMsgElement);
-
-    setTimeout(function () {
-      successMsgElement.remove();
-    }, 3000);
-
-    formElement.reset();
-  }
-
   formElement.addEventListener('submit', function (event) {
     event.preventDefault();
 
-    window.backend.save(new FormData(formElement), onSuccessSend, window.map.onErrorLoad);
+    window.backend.save(
+        new FormData(formElement),
+        window.utils.showOverlayMsg,
+        window.utils.showOverlayMsg
+    );
   });
 
   window.synchronizeFields(
@@ -97,6 +79,10 @@
       var addressInputElement = document.querySelector('#address');
       addressInputElement.value = 'x: ' + coords.x +
       ', ' + 'y: ' + coords.y;
+    },
+
+    resetForm: function () {
+      formElement.reset();
     }
   };
 })();
