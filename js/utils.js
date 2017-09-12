@@ -7,6 +7,38 @@
       ENTER: 13
     },
 
+    overlayMsgParams: {
+      bgColorGreen: 'green',
+      bgColorRed: 'red',
+      msgOnSuccess: 'Все ОК. Данные отправлены!',
+      msgOnErrorForm: 'Ошибка! Кажется, Вы что-то не то ввели.',
+      msgOnErrorConnection: 'Произошла ошибка соединения'
+    },
+
+    showOverlayMsg: function (bgColor, msgText, resetForm) {
+      var msgElement = document.createElement('div');
+      msgElement.style.position = 'fixed';
+      msgElement.style.left = 0;
+      msgElement.style.right = 0;
+      msgElement.style.zIndex = '100';
+      msgElement.style.margin = '0 auto';
+      msgElement.style.fontSize = '25px';
+      msgElement.style.color = '#fff';
+      msgElement.style.textAlign = 'center';
+      msgElement.style.backgroundColor = bgColor;
+
+      msgElement.textContent = msgText;
+      document.body.insertAdjacentElement('afterbegin', msgElement);
+
+      if (resetForm) {
+        setTimeout(function () {
+          msgElement.remove();
+        }, 3000);
+
+        resetForm();
+      }
+    },
+
     createRandomArrayItemGetter: function (array) {
       var randomSource = array.slice();
 
