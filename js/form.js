@@ -32,14 +32,18 @@
     });
   }
 
+  function submitSuccess() {
+    window.utils.showOverlayMsg('green', 'Все ОК. Данные отправлены!');
+    formElement.reset();
+  }
+
+  function submitFailure() {
+    window.utils.showOverlayMsg('red', 'Ошибка! Кажется, Вы что-то не то ввели.');
+  }
+
   formElement.addEventListener('submit', function (event) {
     event.preventDefault();
-
-    window.backend.save(
-        new FormData(formElement),
-        window.utils.showOverlayMsg,
-        window.utils.showOverlayMsg
-    );
+    window.backend.save(new FormData(formElement), submitSuccess, submitFailure);
   });
 
   window.synchronizeFields(
@@ -77,12 +81,7 @@
   window.form = {
     setAddress: function (coords) {
       var addressInputElement = document.querySelector('#address');
-      addressInputElement.value = 'x: ' + coords.x +
-      ', ' + 'y: ' + coords.y;
-    },
-
-    resetForm: function () {
-      formElement.reset();
+      addressInputElement.value = 'x: ' + coords.x + ', y: ' + coords.y;
     }
   };
 })();
