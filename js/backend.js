@@ -3,12 +3,15 @@
 (function () {
   var SERVER_URL = 'https://1510.dump.academy/keksobooking';
 
-  function serverSetup(onLoad, onError) {
+  function setupServer(onLoad, onError) {
+    var SUCCESS_STATUS = 200;
+    var xhrTimeout = 10000;
+
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
+      if (xhr.status === SUCCESS_STATUS) {
         onLoad(xhr.response);
       } else {
         onError('Что-то пошло не так. Попробуйте еще раз');
@@ -25,21 +28,21 @@
       onError(msgText);
     });
 
-    xhr.timeout = 10000;
+    xhr.timeout = xhrTimeout;
 
     return xhr;
   }
 
   window.backend = {
     load: function (onLoad, onError) {
-      var xhr = serverSetup(onLoad, onError);
+      var xhr = setupServer(onLoad, onError);
 
       xhr.open('GET', SERVER_URL + '/data');
       xhr.send();
     },
 
     save: function (data, onLoad, onError) {
-      var xhr = serverSetup(onLoad, onError);
+      var xhr = setupServer(onLoad, onError);
 
       xhr.open('POST', SERVER_URL);
       xhr.send(data);
