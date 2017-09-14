@@ -12,7 +12,7 @@
       msgElement.style.position = 'fixed';
       msgElement.style.left = 0;
       msgElement.style.right = 0;
-      msgElement.style.zIndex = '100';
+      msgElement.style.zIndex = '200';
       msgElement.style.margin = '0 auto';
       msgElement.style.fontSize = '25px';
       msgElement.style.color = '#fff';
@@ -51,6 +51,59 @@
     getRandomArrayLength: function (array) {
       var randomLength = array.length - Math.floor(Math.random() * array.length);
       return array.slice(0, randomLength);
+    },
+
+    matchByValue: function (target, value) {
+      return value === target;
+    },
+
+    matchEqualOrMore: function (target, value) {
+      return value >= target;
+    },
+
+    getAnyOrMatch: function (value, matchFn) {
+      return value === 'any' ? true : matchFn(value);
+    },
+
+    checkInclusion: function (items, requiredItems) {
+      if (requiredItems.length !== 0) {
+        for (var i = 0; i < requiredItems.length; i++) {
+          var requiredItem = requiredItems[i];
+          if (items.indexOf(requiredItem) === -1) {
+            return false;
+          }
+        }
+      }
+      return true;
+    },
+
+    filterByMultiple: function (items, filters) {
+      return items.filter(function (item, id) {
+        for (var i = 0; i < filters.length; i++) {
+          var filterFn = filters[i];
+          if (!filterFn(item, id, items)) {
+            return false;
+          }
+        }
+        return true;
+      });
+    },
+
+    debounce: function (fn, debouncePeriod) {
+      var current = null;
+      return function () {
+        if (current) {
+          return;
+        }
+
+        var args = arguments;
+
+        current = setTimeout(function () {
+          fn.apply(null, args);
+          clearTimeout(current);
+          current = null;
+        }, debouncePeriod);
+      };
     }
   };
 })();

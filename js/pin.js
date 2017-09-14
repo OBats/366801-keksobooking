@@ -5,10 +5,18 @@
   var focusedPinElement;
   var focusedPinContent;
   var selectedPin;
+  var pinElementsDestructors = [];
 
   function setFocusedPin(pinElement, pinData) {
     focusedPinElement = pinElement;
     focusedPinContent = pinData;
+  }
+
+  function clearSelectedPin() {
+    if (selectedPin) {
+      selectedPin.classList.remove('pin--active');
+      selectedPin = null;
+    }
   }
 
   function clearFocusedPin() {
@@ -33,6 +41,8 @@
     getPinMapElement: function (pinParams) {
       var pinMapElement = document.createElement('div');
       var pinMapImageElement = document.createElement('img');
+      var pinClickHandler = onPinClick.bind(null, pinMapElement, pinParams);
+      var pinFocusHandler = onPinFocus.bind(null, pinMapElement, pinParams);
 
       var pinMapImageCoordinates = {
         x: pinParams.location.x - (56 * 0.5) + 'px',
@@ -48,11 +58,18 @@
       pinMapImageElement.setAttribute('width', 40);
       pinMapImageElement.setAttribute('height', 40);
       pinMapImageElement.setAttribute('tabindex', 0);
-      pinMapImageElement.addEventListener('focus', onPinFocus.bind(null, pinMapElement, pinParams));
+      pinMapImageElement.addEventListener('focus', pinFocusHandler);
       pinMapImageElement.addEventListener('blur', onPinLoseFocus);
 
       pinMapElement.appendChild(pinMapImageElement);
-      pinMapElement.addEventListener('click', onPinClick.bind(null, pinMapElement, pinParams));
+      pinMapElement.addEventListener('click', pinClickHandler);
+
+      pinElementsDestructors.push(function () {
+        pinMapImageElement.removeEventListener('focus', pinFocusHandler);
+        pinMapImageElement.removeEventListener('blur', onPinLoseFocus);
+        pinMapElement.removeEventListener('click', pinClickHandler);
+        pinMapElement.remove();
+      });
 
       return pinMapElement;
     },
@@ -67,16 +84,20 @@
       return selectedPin ? true : false;
     },
 
-    clearSelectedPin: function () {
-      if (selectedPin) {
-        selectedPin.classList.remove('pin--active');
-        selectedPin = null;
-      }
-    },
+    clearSelectedPin: clearSelectedPin,
 
     onPinEnterPress: function (event) {
       if (event.keyCode === window.utils.KEY_CODES.ENTER && focusedPinElement) {
         onPinClick(focusedPinElement, focusedPinContent);
+      }
+    },
+
+    removePins: function () {
+      clearSelectedPin();
+      clearFocusedPin();
+      while (pinElementsDestructors.length > 0) {
+        var destructor = pinElementsDestructors.shift();
+        destructor();
       }
     }
   };
