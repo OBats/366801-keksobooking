@@ -7,6 +7,7 @@
 
   var currentFilters = {features: []};
   var offers = [];
+  var isInitialLoad = true;
   var isDragging = false;
   var startCoordsX;
   var startCoordsY;
@@ -30,7 +31,7 @@
   var housingFeaturesContainer = document.querySelector('#housing_features');
   var housingFeaturesElements = [].slice.call(housingFeaturesContainer.querySelectorAll('input'));
 
-  function priceFilter(selectedPriceOption, offerPrice) {
+  function filterPrice(selectedPriceOption, offerPrice) {
     switch (selectedPriceOption) {
       case 'high':
         return offerPrice > 50000;
@@ -49,14 +50,14 @@
 
   var filterFunctionsByField = {
     type: window.utils.matchByValue,
-    price: priceFilter,
+    price: filterPrice,
     rooms: window.utils.matchEqualOrMore,
     guests: window.utils.matchEqualOrMore,
     features: checkRequiredFeatures
   };
 
   function getFilteredOffers() {
-    return offers.filter(function (offer) {
+    var filteredOffers = offers.filter(function (offer) {
       for (var i = 0; i < FILTER_FIELDS.length; i++) {
         var filterField = FILTER_FIELDS[i];
         var filterFunction = filterFunctionsByField[filterField];
@@ -71,6 +72,13 @@
       }
       return true;
     });
+
+    if (isInitialLoad) {
+      isInitialLoad = false;
+      return filteredOffers.slice(0, 3);
+    }
+
+    return filteredOffers;
   }
 
   var debouncedRender = window.utils.debounce(renderPinMapElements, 500);
