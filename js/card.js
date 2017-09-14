@@ -39,10 +39,8 @@
       for (var i = 0; i < offerFeatures.length; i++) {
         var emptySpan = document.createElement('span');
 
-        emptySpan.classList
-            .add('feature__image', 'feature__image--' + offerFeatures[i]);
-        offerDialogTemplate.querySelector('.lodge__features')
-            .appendChild(emptySpan);
+        emptySpan.classList.add('feature__image', 'feature__image--' + offerFeatures[i]);
+        offerDialogTemplate.querySelector('.lodge__features').appendChild(emptySpan);
       }
       return offerDialogTemplate;
     }
