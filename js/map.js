@@ -3,7 +3,10 @@
 (function () {
   var MAP_TOP_MARGIN = 70;
   var MAP_BOTTOM_MARGIN = 40;
+  var FILTER_FIELDS = ['type', 'price', 'rooms', 'guests', 'features'];
 
+  var currentFilters = {features: []};
+  var offers = [];
   var isDragging = false;
   var startCoordsX;
   var startCoordsY;
@@ -14,18 +17,115 @@
   var mapMinY;
   var mapMaxY;
 
-  var tokyoMapAreaElement = document.querySelector('.tokyo > img');
+  var mapAreaElement = document.querySelector('.tokyo > img');
   var pinMapBlockElement = document.querySelector('.tokyo__pin-map');
-  var pinMapMainElement = pinMapBlockElement.querySelector('.pin__main');
+  var pinMapMainElement = document.querySelector('.pin__main');
   var dialogCloseElement = document.querySelector('.dialog__close');
   var offerDialogElement = document.querySelector('#offer-dialog');
 
-  function renderPinMapElements(pinElements) {
-    var fragment = document.createDocumentFragment();
-    var count = pinElements.length;
+  var housingTypeFilterElement = document.querySelector('#housing_type');
+  var housingPriceFilterElement = document.querySelector('#housing_price');
+  var housingRoomNumberFilterElement = document.querySelector('#housing_room-number');
+  var housingGuestsNumberFilterElement = document.querySelector('#housing_guests-number');
+  var housingFeaturesContainer = document.querySelector('#housing_features');
+  var housingFeaturesElements = [].slice.call(housingFeaturesContainer.querySelectorAll('input'));
 
-    for (var i = 0; i < count; i++) {
-      var pinData = pinElements[i];
+  function priceFilter(selectedPriceOption, offerPrice) {
+    switch (selectedPriceOption) {
+      case 'high':
+        return offerPrice > 50000;
+      case 'middle':
+        return offerPrice >= 10000 && offerPrice <= 50000;
+      case 'low':
+        return offerPrice < 10000;
+      default:
+        return true;
+    }
+  }
+
+  function checkRequiredFeatures(requiredFeatures, offerFeatures) {
+    return window.utils.checkInclusion(offerFeatures, requiredFeatures);
+  }
+
+  var filterFunctionsByField = {
+    type: window.utils.matchByValue,
+    price: priceFilter,
+    rooms: window.utils.matchEqualOrMore,
+    guests: window.utils.matchEqualOrMore,
+    features: checkRequiredFeatures
+  };
+
+  function getFilteredOffers() {
+    return offers.filter(function (offer) {
+      for (var i = 0; i < FILTER_FIELDS.length; i++) {
+        var filterField = FILTER_FIELDS[i];
+        var filterFunction = filterFunctionsByField[filterField];
+        var filterValue = currentFilters[filterField] || 'any';
+        var offerValue = offer.offer[filterField];
+        if (filterValue === 'any') {
+          continue;
+        }
+        if (!filterFunction(filterValue, offerValue)) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+
+  var debouncedRender = window.utils.debounce(renderPinMapElements, 500);
+
+  function setFilter(filterField, filterValue) {
+    currentFilters[filterField] = filterValue;
+    debouncedRender();
+  }
+
+  function setTypeFilter() {
+    setFilter('type', housingTypeFilterElement.value);
+  }
+
+  function setPriceFilter() {
+    setFilter('price', housingPriceFilterElement.value);
+  }
+
+  function setRoomNumberFilter() {
+    setFilter('rooms', parseInt(housingRoomNumberFilterElement.value, 10));
+  }
+
+  function setGuestsNumberFilter() {
+    setFilter('guests', parseInt(housingGuestsNumberFilterElement.value, 10));
+  }
+
+  function setRequiredFeaturesFilter() {
+    var requiredFeatures = housingFeaturesElements
+        .filter(function (featureElement) {
+          return featureElement.checked;
+        })
+        .map(function (featureElement) {
+          return featureElement.value;
+        });
+
+    setFilter('features', requiredFeatures);
+  }
+
+  housingTypeFilterElement.addEventListener('change', setTypeFilter);
+  housingPriceFilterElement.addEventListener('change', setPriceFilter);
+  housingRoomNumberFilterElement.addEventListener('change', setRoomNumberFilter);
+  housingGuestsNumberFilterElement.addEventListener('change', setGuestsNumberFilter);
+  housingFeaturesContainer.addEventListener('click', function (event) {
+    if (event.target !== housingFeaturesContainer) {
+      setRequiredFeaturesFilter();
+    }
+  });
+
+  function renderPinMapElements() {
+    window.pin.removePins();
+
+    var filteredOffers = getFilteredOffers();
+    var fragment = document.createDocumentFragment();
+
+    for (var i = 0; i < filteredOffers.length; i++) {
+      var pinData = filteredOffers[i];
       var pinElement = window.pin.getPinMapElement(pinData);
       fragment.appendChild(pinElement);
 
@@ -56,10 +156,10 @@
 
     pinMapMainElementWidth = pinMapMainElement.offsetWidth;
     pinMapMainElementHeight = pinMapMainElement.offsetHeight;
-    mapMinX = tokyoMapAreaElement.offsetLeft;
-    mapMaxX = tokyoMapAreaElement.offsetWidth - pinMapMainElementWidth;
-    mapMinY = tokyoMapAreaElement.offsetTop + MAP_TOP_MARGIN;
-    mapMaxY = tokyoMapAreaElement.offsetHeight - pinMapMainElementHeight - MAP_BOTTOM_MARGIN;
+    mapMinX = mapAreaElement.offsetLeft;
+    mapMaxX = mapAreaElement.offsetWidth - pinMapMainElementWidth;
+    mapMinY = mapAreaElement.offsetTop + MAP_TOP_MARGIN;
+    mapMaxY = mapAreaElement.offsetHeight - pinMapMainElementHeight - MAP_BOTTOM_MARGIN;
   }
 
   function onMouseUp() {
@@ -118,6 +218,19 @@
     window.utils.showOverlayMsg('red', msgText);
   }
 
+  function initFilters() {
+    setTypeFilter();
+    setPriceFilter();
+    setRoomNumberFilter();
+    setGuestsNumberFilter();
+    setRequiredFeaturesFilter();
+  }
+
+  window.backend.load(function (receivedOffers) {
+    offers = receivedOffers;
+    initFilters();
+  }, onLoadFailure);
+
   window.map = {
     openDialog: function (offer) {
       window.showCard(offer, offerDialogElement);
@@ -129,8 +242,6 @@
       window.pin.clearSelectedPin();
     },
   };
-
-  window.backend.load(renderPinMapElements, onLoadFailure);
 
   pinMapMainElement.addEventListener('mousedown', onPinMapMainElementMousedown);
   document.addEventListener('mouseup', onMouseUp);
