@@ -8,14 +8,14 @@
     bungalo: 'Бунгало'
   };
 
-  var lodgeTemplate = document
+  var lodgeTemplateElement = document
       .querySelector('#lodge-template')
       .content
       .querySelector('.dialog__panel');
 
   window.card = {
     createCard: function (element) {
-      var offerDialogTemplate = lodgeTemplate.cloneNode(true);
+      var offerDialogTemplate = lodgeTemplateElement.cloneNode(true);
       var offerFeatures = element.offer.features;
 
       var lodgeTitle = offerDialogTemplate.querySelector('.lodge__title');
