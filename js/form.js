@@ -8,6 +8,7 @@
   var roomsNumberElement = formElement.querySelector('#room_number');
   var guestsNumberElement = formElement.querySelector('#capacity');
   var pricePerNightElement = formElement.querySelector('#price');
+  var addressInputElement = document.querySelector('#address');
 
   function syncOptionsValues(element, value) {
     element.value = value;
@@ -43,6 +44,11 @@
 
   formElement.addEventListener('submit', function (event) {
     event.preventDefault();
+
+    if (!addressInputElement.value) {
+      addressInputElement.style.boxShadow = '0 0 4px 1px #ff6547';
+    }
+
     window.backend.save(new FormData(formElement), submitSuccess, submitFailure);
   });
 
@@ -80,7 +86,6 @@
 
   window.form = {
     setAddress: function (coords) {
-      var addressInputElement = document.querySelector('#address');
       addressInputElement.value = 'x: ' + coords.x + ', y: ' + coords.y;
     }
   };
