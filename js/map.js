@@ -32,13 +32,16 @@
   var housingFeaturesElements = [].slice.call(housingFeaturesContainer.querySelectorAll('input'));
 
   function filterPrice(selectedPriceOption, offerPrice) {
+    var MAX_PRICE = 50000;
+    var MIN_PRICE = 10000;
+
     switch (selectedPriceOption) {
       case 'high':
-        return offerPrice > 50000;
+        return offerPrice > MAX_PRICE;
       case 'middle':
-        return offerPrice >= 10000 && offerPrice <= 50000;
+        return offerPrice >= MIN_PRICE && offerPrice <= MAX_PRICE;
       case 'low':
-        return offerPrice < 10000;
+        return offerPrice < MIN_PRICE;
       default:
         return true;
     }
@@ -88,19 +91,19 @@
     debouncedRender();
   }
 
-  function setTypeFilter() {
+  function onHousingTypeFilterChange() {
     setFilter('type', housingTypeFilterElement.value);
   }
 
-  function setPriceFilter() {
+  function onHousingPriceFilterChange() {
     setFilter('price', housingPriceFilterElement.value);
   }
 
-  function setRoomNumberFilter() {
+  function onHousingRoomNumberFilterChange() {
     setFilter('rooms', parseInt(housingRoomNumberFilterElement.value, 10));
   }
 
-  function setGuestsNumberFilter() {
+  function onHousingGuestsNumberFilterChange() {
     setFilter('guests', parseInt(housingGuestsNumberFilterElement.value, 10));
   }
 
@@ -116,10 +119,10 @@
     setFilter('features', requiredFeatures);
   }
 
-  housingTypeFilterElement.addEventListener('change', setTypeFilter);
-  housingPriceFilterElement.addEventListener('change', setPriceFilter);
-  housingRoomNumberFilterElement.addEventListener('change', setRoomNumberFilter);
-  housingGuestsNumberFilterElement.addEventListener('change', setGuestsNumberFilter);
+  housingTypeFilterElement.addEventListener('change', onHousingTypeFilterChange);
+  housingPriceFilterElement.addEventListener('change', onHousingPriceFilterChange);
+  housingRoomNumberFilterElement.addEventListener('change', onHousingRoomNumberFilterChange);
+  housingGuestsNumberFilterElement.addEventListener('change', onHousingGuestsNumberFilterChange);
   housingFeaturesContainer.addEventListener('click', function (event) {
     if (event.target !== housingFeaturesContainer) {
       setRequiredFeaturesFilter();
@@ -227,10 +230,10 @@
   }
 
   function initFilters() {
-    setTypeFilter();
-    setPriceFilter();
-    setRoomNumberFilter();
-    setGuestsNumberFilter();
+    onHousingTypeFilterChange();
+    onHousingPriceFilterChange();
+    onHousingRoomNumberFilterChange();
+    onHousingGuestsNumberFilterChange();
     setRequiredFeaturesFilter();
   }
 
