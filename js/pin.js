@@ -39,14 +39,18 @@
 
   window.pin = {
     getPinMapElement: function (pinParams) {
+      var PIN_HALF_WIDTH = 28;
+      var PIN_HEIGHT = 75;
+      var PIN_MAP_IMAGE_SIZE = 40;
+
       var pinMapElement = document.createElement('div');
       var pinMapImageElement = document.createElement('img');
       var pinClickHandler = onPinClick.bind(null, pinMapElement, pinParams);
       var pinFocusHandler = onPinFocus.bind(null, pinMapElement, pinParams);
 
       var pinMapImageCoordinates = {
-        x: pinParams.location.x - (56 * 0.5) + 'px',
-        y: pinParams.location.y - 75 + 'px'
+        x: pinParams.location.x - PIN_HALF_WIDTH + 'px',
+        y: pinParams.location.y - PIN_HEIGHT + 'px'
       };
 
       pinMapElement.classList.add('pin');
@@ -55,8 +59,8 @@
 
       pinMapImageElement.src = pinParams.author.avatar;
       pinMapImageElement.classList.add('rounded');
-      pinMapImageElement.setAttribute('width', 40);
-      pinMapImageElement.setAttribute('height', 40);
+      pinMapImageElement.setAttribute('width', PIN_MAP_IMAGE_SIZE);
+      pinMapImageElement.setAttribute('height', PIN_MAP_IMAGE_SIZE);
       pinMapImageElement.setAttribute('tabindex', 0);
       pinMapImageElement.addEventListener('focus', pinFocusHandler);
       pinMapImageElement.addEventListener('blur', onPinLoseFocus);
@@ -81,7 +85,7 @@
     },
 
     hasSelectedPin: function () {
-      return selectedPin ? true : false;
+      return selectedPin === true;
     },
 
     clearSelectedPin: clearSelectedPin,
