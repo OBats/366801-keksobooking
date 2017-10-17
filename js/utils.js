@@ -61,10 +61,6 @@
       return value >= target;
     },
 
-    getAnyOrMatch: function (value, matchFn) {
-      return value === 'any' ? true : matchFn(value);
-    },
-
     checkInclusion: function (items, requiredItems) {
       if (requiredItems.length !== 0) {
         for (var i = 0; i < requiredItems.length; i++) {
@@ -77,31 +73,18 @@
       return true;
     },
 
-    filterByMultiple: function (items, filters) {
-      return items.filter(function (item, id) {
-        for (var i = 0; i < filters.length; i++) {
-          var filterFn = filters[i];
-          if (!filterFn(item, id, items)) {
-            return false;
-          }
-        }
-        return true;
-      });
-    },
-
     debounce: function (fn, debouncePeriod) {
-      var current = null;
+      var lastTimeout = null;
+
       return function () {
-        if (current) {
-          return;
+        if (lastTimeout) {
+          clearTimeout(lastTimeout);
         }
 
         var args = arguments;
 
-        current = setTimeout(function () {
+        lastTimeout = setTimeout(function () {
           fn.apply(null, args);
-          clearTimeout(current);
-          current = null;
         }, debouncePeriod);
       };
     }

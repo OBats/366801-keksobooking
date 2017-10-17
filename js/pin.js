@@ -79,13 +79,13 @@
     },
 
     selectPin: function (pinElement) {
-      this.clearSelectedPin(selectedPin);
+      clearSelectedPin(selectedPin);
       selectedPin = pinElement;
       selectedPin.classList.add('pin--active');
     },
 
     hasSelectedPin: function () {
-      return selectedPin === true;
+      return !!selectedPin;
     },
 
     clearSelectedPin: clearSelectedPin,
@@ -100,7 +100,7 @@
       clearSelectedPin();
       clearFocusedPin();
       while (pinElementsDestructors.length > 0) {
-        var destructor = pinElementsDestructors.shift();
+        var destructor = pinElementsDestructors.pop();
         destructor();
       }
     }
