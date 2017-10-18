@@ -8,5 +8,6 @@ Thumbs.db
 *.psd
 *.ai
 *.pdf
+data.json
 yarn.lock
 npm-debug.log*
