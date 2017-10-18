@@ -108,7 +108,7 @@
       <div class="notice__photo">
         <div class="notice__preview"><img src="img/muffin.png" alt="User Avatar" width="40" height="44"></div>
         <div class="drop-zone upload">
-          <input type="file">
+          <input class="drop-zone__input" type="file" accept="image/*">
           <span class="drop-zone">Загрузите или&nbsp;перетащите сюда фото</span>
         </div>
         <p class="notice__info">Заполните все обязательные поля, назначьте цену, загрузите фотографии. Придумайте интересное описание. Оно сделает объявление более живым и привлекательным. Получившееся объявление должно давать гостям полное представление о вашем жилье.</p>
@@ -220,8 +220,8 @@
           <div class="form__element">
             <label>Фотографии жилья</label>
             <div class="form__photo-container">
-              <div class="drop-zone  upload">
-                <input type="file">
+              <div class="drop-zone upload">
+                <input class="drop-zone__input" type="file" multiple accept="image/*">
                 <span class="drop-zone">Загрузите или&nbsp;перетащите сюда фото</span>
               </div>
               <div class="form__photo"></div>
@@ -287,5 +287,7 @@
 <script src="js/backend.js"></script>
 <script src="js/map.js"></script>
 <script src="js/form.js"></script>
+<script src="js/avatar-upload.js"></script>
+<script src="js/photo-upload.js"></script>
 </body>
 </html>
