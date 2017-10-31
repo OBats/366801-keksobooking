@@ -18,7 +18,8 @@
   var mapMinY;
   var mapMaxY;
 
-  var mapAreaElement = document.querySelector('.tokyo > img');
+  var mapAreaElement = document.querySelector('.tokyo');
+  var mapImageElement = document.querySelector('.tokyo > img');
   var pinMapBlockElement = document.querySelector('.tokyo__pin-map');
   var pinMapMainElement = document.querySelector('.pin__main');
   var dialogCloseElement = document.querySelector('.dialog__close');
@@ -167,10 +168,10 @@
 
     pinMapMainElementWidth = pinMapMainElement.offsetWidth;
     pinMapMainElementHeight = pinMapMainElement.offsetHeight;
-    mapMinX = mapAreaElement.offsetLeft;
-    mapMaxX = mapAreaElement.offsetWidth - pinMapMainElementWidth;
-    mapMinY = mapAreaElement.offsetTop + MAP_TOP_MARGIN;
-    mapMaxY = mapAreaElement.offsetHeight - pinMapMainElementHeight - MAP_BOTTOM_MARGIN;
+    mapMinX = mapImageElement.offsetLeft;
+    mapMaxX = mapImageElement.offsetWidth - pinMapMainElementWidth;
+    mapMinY = mapImageElement.offsetTop + MAP_TOP_MARGIN;
+    mapMaxY = mapImageElement.offsetHeight - pinMapMainElementHeight - MAP_BOTTOM_MARGIN;
   }
 
   function onMouseUp() {
@@ -255,8 +256,8 @@
   };
 
   pinMapMainElement.addEventListener('mousedown', onPinMapMainElementMousedown);
-  document.addEventListener('mouseup', onMouseUp);
-  document.addEventListener('mousemove', onMouseMove);
+  mapAreaElement.addEventListener('mouseup', onMouseUp);
+  mapAreaElement.addEventListener('mousemove', onMouseMove);
   dialogCloseElement.addEventListener('click', window.map.onCloseDialog);
   pinMapBlockElement.addEventListener('keydown', window.pin.onPinEnterPress);
   document.addEventListener('keydown', onDialogEscPress);
