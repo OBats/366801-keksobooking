@@ -406,7 +406,7 @@ select option:hover {
     display: flex;
     flex-wrap: wrap;
 }
-.form__photo-container img {
+/* .form__photo-container img {
   display: block;
   margin-right: 5px;
   margin-bottom: 5px;
@@ -423,10 +423,8 @@ select option:hover {
   background: #dadad4;
   object-fit: cover;
 }
-
+ */
 .form__photo {
-    position: relative;
-    z-index: 100;
     margin-right: 5px;
     margin-bottom: 5px;
     box-sizing: border-box;
@@ -442,14 +440,14 @@ select option:hover {
     background: #dadad4;
 }
 
-/* .form__photo img {
+.form__photo img {
   display: block;
-  width: 30px;
-  height: 30px;
+  width: 70px;
+  height: 70px;
   object-fit: cover;
-} */
+}
 
-.form__photo.over {
+.over {
   border: 2px dashed #000;
 }
 
