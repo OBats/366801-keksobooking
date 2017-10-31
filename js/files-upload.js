@@ -23,6 +23,7 @@
     reader.addEventListener('load', function () {
       img.src = reader.result;
       container.appendChild(img);
+      window.dragHandler();
     });
 
     reader.readAsDataURL(file);
